@@ -1,0 +1,184 @@
+package com.hitachi_tstv.mist.it.pod_val_mitsu;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class DateDeliveryActivity extends AppCompatActivity {
+
+    @BindView(R.id.lisDADate)
+    ListView lisDADate;
+
+    String[] loginStrings, deliveryDateStrings, sumjobStrings;
+    String dateString;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_date_delivery);
+        ButterKnife.bind(this);
+//
+        loginStrings = getIntent().getStringArrayExtra("Login");
+        dateString = getIntent().getStringExtra("Date");
+
+//        Check login
+//        Resources res = getResources();
+//        String[] login = res.getStringArray(R.array.login_array);
+
+        SyncGetDate syncGetDate = new SyncGetDate(this, loginStrings[0]);
+        syncGetDate.execute();
+    }
+    @OnItemClick(R.id.lisDADate)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent = new Intent(DateDeliveryActivity.this, JobActivity.class);
+        intent.putExtra("Login", loginStrings);
+        intent.putExtra("Date", deliveryDateStrings[position]);
+        Log.d("Tag", "Send ==> " + deliveryDateStrings[position] + " " + Arrays.toString(loginStrings));
+        startActivity(intent);
+        finish();
+    }
+
+    class SyncGetDate extends AsyncTask<Void, Void, String> {
+        Context context;
+        String truckIDString;
+
+
+        public SyncGetDate(Context context, String truckIDString) {
+            this.context = context;
+            this.truckIDString = truckIDString;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                Log.d("Tag", "Send ==> " + truckIDString);
+                OkHttpClient okHttpClient = new OkHttpClient();
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("isAdd", "true")
+                        .add("truck_id", truckIDString)
+                        .build();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.post(requestBody).url(MyConstant.urlGetPlanDate).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+            } catch (IOException e) {
+                Log.d("Tag", "Error Date Activity SyncGetDate do in back ==> " + e +" Line " + e.getStackTrace()[0].getLineNumber());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("Tag", "S ==> " + s);
+
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                deliveryDateStrings = new String[jsonArray.length()];
+                sumjobStrings = new String[jsonArray.length()];
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    deliveryDateStrings[i] = jsonObject.getString("planDate");
+                    sumjobStrings[i] = jsonObject.getString("cnt_store");
+                }
+
+                PlanDateAdaptor planDateAdaptor = new PlanDateAdaptor(context, deliveryDateStrings, sumjobStrings);
+                lisDADate.setAdapter(planDateAdaptor);
+
+            } catch (JSONException e) {
+                Log.d("Tag", "Error Date Activity SyncGetDate on post JSONArray ==> " + e +" Line " + e.getStackTrace()[0].getLineNumber());
+
+            }
+        }
+
+        protected class PlanDateAdaptor extends BaseAdapter {
+            Context context;
+            String[] dateStrings, jobStrings;
+            ViewHolder viewHolder;
+
+            public PlanDateAdaptor(Context context, String[] dateStrings, String[] jobStrings) {
+                this.context = context;
+                this.dateStrings = dateStrings;
+                this.jobStrings = jobStrings;
+            }
+
+            @Override
+            public int getCount() {
+                return dateStrings.length;
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return null;
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.date_listview, null);
+                    viewHolder = new ViewHolder(convertView);
+                    convertView.setTag(viewHolder);
+
+                } else {
+                    viewHolder = (ViewHolder) convertView.getTag();
+                }
+
+                String date, job;
+
+                date = getResources().getString(R.string.Date) + " : " + dateStrings[position];
+                job = jobStrings[position] + " " + getResources().getString(R.string.Plan);
+                viewHolder.dateTextView.setText(date);
+                viewHolder.sumjobTextView.setText(job);
+
+                return convertView;
+            }
+
+
+            class ViewHolder {
+                @BindView(R.id.txtDLVDate)
+                TextView dateTextView;
+                @BindView(R.id.txtDLVSumjob)
+                TextView sumjobTextView;
+
+                ViewHolder(View view) {
+                    ButterKnife.bind(this, view);
+                }
+            }
+        }
+    }
+}
