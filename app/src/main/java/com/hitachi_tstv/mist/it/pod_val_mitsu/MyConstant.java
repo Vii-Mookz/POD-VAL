@@ -10,5 +10,6 @@ public interface MyConstant {
     public static final String pathString = "/app/CenterService/";
     public static final String urlGetUserLogin = serverString + projectString + pathString + "getUserLogin.php";
     public static final String urlGetPlanDate = serverString + projectString + pathString +"getPlanDate.php";
-
+    public static final String urlGetTrip = serverString + projectString + pathString +"getTrip.php";
+    public static final String urlGetUpdateDCStart = serverString + projectString + pathString +"getupdateDCStart.php";
 }

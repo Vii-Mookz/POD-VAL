@@ -15,4 +15,25 @@
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
+
+
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+
+        <item name="android:textColor">@color/Crimson</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/ForestGreen</item>
+
+    </style>
+
+
+    <style name="AlertDialogTheme">
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="android:background">@color/Black</item>
+        <item name="android:textColor">@color/WhiteSmoke</item>
+        <item name="android:textSize">@dimen/txt_h3</item>
+    </style>
 </resources>

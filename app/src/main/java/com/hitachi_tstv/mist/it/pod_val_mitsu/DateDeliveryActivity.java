@@ -2,6 +2,7 @@ package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -49,10 +50,10 @@ public class DateDeliveryActivity extends AppCompatActivity {
         dateString = getIntent().getStringExtra("Date");
 
 //        Check login
-//        Resources res = getResources();
-//        String[] login = res.getStringArray(R.array.login_array);
+        Resources res = getResources();
+        String[] login = res.getStringArray(R.array.login_array);
 
-        SyncGetDate syncGetDate = new SyncGetDate(this, loginStrings[0]);
+        SyncGetDate syncGetDate = new SyncGetDate(this, login[0]);
         syncGetDate.execute();
     }
     @OnItemClick(R.id.lisDADate)
@@ -78,7 +79,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                Log.d("Tag", "Send ==> " + truckIDString);
+                Log.d("Tag", "Send T==> " + truckIDString);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
