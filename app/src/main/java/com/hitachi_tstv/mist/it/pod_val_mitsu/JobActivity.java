@@ -1,10 +1,11 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -61,13 +62,13 @@ public class JobActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 //        Check login
-        Resources res = getResources();
-        String[] login = res.getStringArray(R.array.login_array);
+//        Resources res = getResources();
+//        String[] login = res.getStringArray(R.array.login_array);
         loginStrings = getIntent().getStringArrayExtra("Login");
         dateString = getIntent().getStringExtra("Date");
         txtTripdate.setText(dateString);
 
-        SynGetJobList synGetJobList = new SynGetJobList(this, login[0]);
+        SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
         synGetJobList.execute();
     }
 
@@ -77,7 +78,7 @@ public class JobActivity extends AppCompatActivity {
         private String truckIDString;
 
 
-        public SynGetJobList(Context context, String truckIDString) {
+        public SynGetJobList(Context context) {
             this.context = context;
             this.truckIDString = truckIDString;
         }
@@ -229,10 +230,31 @@ public class JobActivity extends AppCompatActivity {
                     time[0] = utilityClass.getDateTime();
 
                     Log.d("Tag", "Lat/Long : Time ==> " + lat[0] + "/" + lng[0] + " : " + time[0]);
-                    Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
+
                     SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0]);
                     synUpdateTripStatus.execute();
+//                    btnStart.setEnabled(false);
+//                    btnStart.setVisibility(View.INVISIBLE);
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                    dialog.setTitle("Alert");
+//                            dialog.setIcon(R.drawable.ic_launcher);
+                    dialog.setCancelable(true);
+                    dialog.setMessage("Do you want to save?");
 
+                    dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
+                            btnStart.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    dialog.show();
                 } else {
                     Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
 
@@ -240,6 +262,50 @@ public class JobActivity extends AppCompatActivity {
 
                 break;
             case R.id.button:
+                final String[] latStrings = new String[1];
+                final String[] lngStrings = new String[1];
+                final String[] timeStrings = new String[1];
+                        UtilityClass utilityClass1 = new UtilityClass(this);
+                        if (utilityClass1.setLatLong(0)) {
+                                latStrings[0] = utilityClass1.getLatString();
+                                lngStrings[0] = utilityClass1.getLongString();
+                                timeStrings[0] = utilityClass1.getDateTime();
+                                Log.d("Tag", "Lat/Long : Time ==> " + latStrings[0] + "/" + lngStrings[0] + " : " + timeStrings[0]);
+
+
+                            SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(timeStrings[0], latStrings[0], lngStrings[0]);
+                            synUpdateTripStatus.execute();
+
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                            dialog.setTitle("Finish");
+//                            dialog.setIcon(R.drawable.ic_launcher);
+                            dialog.setCancelable(true);
+                            dialog.setMessage("Do you want to finish?");
+
+                            dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(JobActivity.this,DateDeliveryActivity.class);
+                                    buttonFinish.setEnabled(false);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                            dialog.show();
+
+//
+                            } else {
+                                Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
+                            }
+
+
+
                 break;
         }
     }
