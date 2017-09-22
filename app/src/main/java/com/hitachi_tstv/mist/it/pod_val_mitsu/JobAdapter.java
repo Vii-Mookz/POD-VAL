@@ -1,9 +1,17 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Vipavee on 21/09/2017.
@@ -11,28 +19,25 @@ import android.widget.BaseAdapter;
 
 public class JobAdapter extends BaseAdapter {
 
-    Context context;
+    private Context context;
+    private int[] intsPic;
     String dateString, tripNoString, subJobNoString;
-    String[] storeStrings, timeStrings, loginStrings, outTimeStrings, placeStrings;
-    String[][] jobNoStrings;
+    String[] loginStrings, planNoStrings, transportTypeStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, truckTypeCodeStrings;
+    ViewHolder viewholder;
 
-
-    public JobAdapter(Context context, String dateString) {
+    public JobAdapter(Context context, String[] planDtlIdStrings, String[] stationNameStrings, String[] timeArrivalStrings,String[] placeTypeStrings) {
         this.context = context;
-        this.dateString = dateString;
-        this.tripNoString = tripNoString;
-        this.subJobNoString = subJobNoString;
-        this.storeStrings = storeStrings;
-        this.timeStrings = timeStrings;
-        this.loginStrings = loginStrings;
-        this.outTimeStrings = outTimeStrings;
-        this.placeStrings = placeStrings;
-        this.jobNoStrings = jobNoStrings;
+        this.planDtlIdStrings = planDtlIdStrings;
+        this.timeArrivalStrings = timeArrivalStrings;
+        this.stationNameStrings = stationNameStrings;
+        this.placeTypeStrings = placeTypeStrings;
     }
+
+
 
     @Override
     public int getCount() {
-        return 0;
+        return planDtlIdStrings.length;
     }
 
     @Override
@@ -47,6 +52,46 @@ public class JobAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+
+        if (convertView == null) {
+
+            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.listview_job, parent, false);
+
+            viewholder = new ViewHolder(convertView);
+
+            convertView.setTag(viewholder);
+
+        } else {
+
+            viewholder = (ViewHolder) convertView.getTag();
+        }
+
+        if (placeTypeStrings[position].equals("PLANT") ) {
+            viewholder.imgView.setImageResource(R.drawable.factory);
+            viewholder.imgView.setColorFilter(new LightingColorFilter(Color.BLUE, Color.BLUE));
+        }else {
+
+            viewholder.imgView.setImageResource(R.drawable.home1);
+        }
+        viewholder.txtSup.setText(stationNameStrings[position]);
+        viewholder.txtTime.setText(timeArrivalStrings[position]);
+
+
+
+        return convertView;
+    }
+
+    static class ViewHolder {
+
+        @BindView(R.id.imgView)
+        ImageView imgView;
+        @BindView(R.id.txtSup)
+        TextView txtSup;
+        @BindView(R.id.txtTime)
+        TextView txtTime;
+        ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 }
