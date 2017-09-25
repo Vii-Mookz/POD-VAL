@@ -52,7 +52,7 @@ public class JobActivity extends AppCompatActivity {
 
     String[] loginStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings;
 
-    String worksheetString, dateString, planNoStrings;
+    String worksheetString, dateString, planNoStrings,startDepartureDateString,datePlanStrings;
 
 
     @Override
@@ -64,10 +64,15 @@ public class JobActivity extends AppCompatActivity {
 //        Check login
 //        Resources res = getResources();
 //        String[] login = res.getStringArray(R.array.login_array);
+        int i = 0;
         loginStrings = getIntent().getStringArrayExtra("Login");
         dateString = getIntent().getStringExtra("Date");
-        txtTripdate.setText(dateString);
+        datePlanStrings = getIntent().getStringExtra("planDate");
+//        txtTripdate.setText(dateString);
+        txtTripdate.setText(datePlanStrings);
+        txtTrip.setText("Trip "+ String.valueOf(i+1));
 
+        Log.d("TAG", "Date -->" + datePlanStrings);
         SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
         synGetJobList.execute();
     }
@@ -91,9 +96,10 @@ public class JobActivity extends AppCompatActivity {
                 Request.Builder builder = new Request.Builder();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
-                        .add("driver_id", "")
+                        .add("driver_id", loginStrings[0])
                         .add("plan_id", "")
                         .add("planDtlId", "")
+                        .add("st_departureDate","")
 
                         .build();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetTrip).build();
@@ -118,6 +124,7 @@ public class JobActivity extends AppCompatActivity {
 
                 worksheetString = jsonObject1.getString("work_sheet_no");
                 planNoStrings = jsonObject1.getString("planNo");
+                startDepartureDateString = jsonObject1.getString("st_departureDate");
 
                 JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
                 planDtlIdStrings = new String[jsonArray1.length()];
@@ -235,6 +242,7 @@ public class JobActivity extends AppCompatActivity {
                     synUpdateTripStatus.execute();
 //                    btnStart.setEnabled(false);
 //                    btnStart.setVisibility(View.INVISIBLE);
+
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     dialog.setTitle("Alert");
 //                            dialog.setIcon(R.drawable.ic_launcher);
@@ -245,6 +253,7 @@ public class JobActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
                             btnStart.setVisibility(View.INVISIBLE);
+
                         }
                     });
 

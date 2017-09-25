@@ -2,7 +2,6 @@ package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -50,10 +49,10 @@ public class DateDeliveryActivity extends AppCompatActivity {
         dateString = getIntent().getStringExtra("Date");
 
 //        Check login
-        Resources res = getResources();
-        String[] login = res.getStringArray(R.array.login_array);
+//        Resources res = getResources();
+//        String[] login = res.getStringArray(R.array.login_array);
 
-        SyncGetDate syncGetDate = new SyncGetDate(this, login[0]);
+        SyncGetDate syncGetDate = new SyncGetDate(DateDeliveryActivity.this);
         syncGetDate.execute();
     }
     @OnItemClick(R.id.lisDADate)
@@ -71,7 +70,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
         String truckIDString;
 
 
-        public SyncGetDate(Context context, String truckIDString) {
+        public SyncGetDate(Context context) {
             this.context = context;
             this.truckIDString = truckIDString;
         }
@@ -83,7 +82,8 @@ public class DateDeliveryActivity extends AppCompatActivity {
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
-                        .add("truck_id", truckIDString)
+//                        .add("truck_id", loginStrings[0])
+                        .add("driver_id",loginStrings[0])
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetPlanDate).build();

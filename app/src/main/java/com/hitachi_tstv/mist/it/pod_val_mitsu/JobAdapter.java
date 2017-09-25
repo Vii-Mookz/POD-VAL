@@ -20,9 +20,9 @@ import butterknife.ButterKnife;
 public class JobAdapter extends BaseAdapter {
 
     private Context context;
-    private int[] intsPic;
+
     String dateString, tripNoString, subJobNoString;
-    String[] loginStrings, planNoStrings, transportTypeStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, truckTypeCodeStrings;
+    String[]  placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings;
     ViewHolder viewholder;
 
     public JobAdapter(Context context, String[] planDtlIdStrings, String[] stationNameStrings, String[] timeArrivalStrings,String[] placeTypeStrings) {
