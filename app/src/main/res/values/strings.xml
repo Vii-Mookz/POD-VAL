@@ -20,6 +20,10 @@
     <string name="err_odo">Error not get ODO</string>
     <string name="cancel">Cancel</string>
     <string name="err_gps">Sorry Can\'t Get Latitude, Longitude. Please Try again</string>
+    <string name="truck_license">Truck License :</string>
+    <string name="truck_type">Truck Type : </string>
+    <string name="driver_name">Driver Name  :</string>
+    <string name="trip">Trip</string>
 
 
 

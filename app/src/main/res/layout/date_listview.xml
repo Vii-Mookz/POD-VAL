@@ -30,7 +30,7 @@
         android:layout_weight="1.5"
         android:gravity="center"
         android:padding="@dimen/mini_margin"
-        android:text="@string/Plan"
+        android:text="@string/trip"
         android:textSize="24sp" />
 
 </LinearLayout>

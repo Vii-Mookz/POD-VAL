@@ -128,7 +128,13 @@ public class TripActivity extends AppCompatActivity {
                 Picasso.with(context)
                         .load(pathImg)
                         .into(imgDriverTrip);
+                if (loginStrings[6].equals("M") ) {
+                    imgDriverTrip.setImageResource(R.drawable.male);
 
+                }else {
+
+                    imgDriverTrip.setImageResource(R.drawable.female);
+                }
 
 
                 JSONArray jsonArray = jsonObject.getJSONArray("tripInfo");
@@ -176,13 +182,14 @@ public class TripActivity extends AppCompatActivity {
                 tripListviewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                        String DateTrip = dateBtnTrip.toString();
                         Intent intent = new Intent(TripActivity.this, JobActivity.class);
                         intent.putExtra("Login", loginStrings);
                         intent.putExtra("planDtlId", planDtlIdStrings[i]);
-//                        intent.putExtra("planDate", planDateStrings);
+
                         Log.d("Tag", "intent::: PlanDtlId:::--->" + planDtlIdStrings[i]);
                         Log.d("Tag", "intent::: loginStrings:::--->" + loginStrings);
-//                        Log.d("Tag", "intent::: planDate:::--->" + planDateStrings);
+
                         startActivity(intent);
                     }
                 });
