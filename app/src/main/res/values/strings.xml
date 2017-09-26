@@ -24,10 +24,16 @@
     <string name="truck_type">Truck Type : </string>
     <string name="driver_name">Driver Name  :</string>
     <string name="trip">Trip</string>
+    <string name="save_success">Save Success</string>
+    <string name="save_error">Save Fail!!! Please Try Again</string>
+    <string name="departure">Depart</string>
+    <string name="pallet">Pallet</string>
+    <string name="refresh">Refresh</string>
+    <string name="logout">Logout</string>
+    <string name="alert_logout">Do you want to logout?</string>
 
 
-
-        <string-array name="login_array">
+    <string-array name="login_array">
             <item>abc</item>
             <item>VAL-AMA-133</item>
             <item>Earth</item>

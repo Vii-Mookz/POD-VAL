@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,7 +53,7 @@ public class JobActivity extends AppCompatActivity {
 
     String[] loginStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings;
 
-    String worksheetString, dateString, planNoStrings,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
+    String worksheetString, dateString, planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
 
 
     @Override
@@ -70,7 +71,7 @@ public class JobActivity extends AppCompatActivity {
         txtTripdate.setText(datePlanStrings);
         txtTrip.setText("Trip "+ positionString);
 
-        Log.d("TAG", "Date -->" + planIdString);
+        Log.d("TAG", "Date -->" + datePlanStrings);
         SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
         synGetJobList.execute();
     }
@@ -78,12 +79,10 @@ public class JobActivity extends AppCompatActivity {
 
     protected class SynGetJobList extends AsyncTask<Void, Void, String> {
         private Context context;
-        private String truckIDString;
 
 
         public SynGetJobList(Context context) {
             this.context = context;
-            this.truckIDString = truckIDString;
         }
 
         @Override
@@ -121,6 +120,7 @@ public class JobActivity extends AppCompatActivity {
                 worksheetString = jsonObject1.getString("work_sheet_no");
                 planNoStrings = jsonObject1.getString("planNo");
                 startDepartureDateString = jsonObject1.getString("st_departureDate");
+                endArrivalDateString = jsonObject1.getString("en_arrivalDate");
 
                 JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
                 planDtlIdStrings = new String[jsonArray1.length()];
@@ -137,6 +137,19 @@ public class JobActivity extends AppCompatActivity {
                     placeTypeStrings[j] = jsonObject2.getString("placeType");
                 }
 
+                if (!startDepartureDateString.equals("")) {
+                    btnStart.setVisibility(View.INVISIBLE);
+                } else {
+                    btnStart.setVisibility(View.VISIBLE);
+                    buttonFinish.setEnabled(false);
+                }
+
+                if (!endArrivalDateString.equals("")) {
+                    buttonFinish.setVisibility(View.INVISIBLE);
+                } else {
+                    buttonFinish.setVisibility(View.VISIBLE);
+                }
+
 
                 JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings,placeTypeStrings);
                 lisJAStore.setAdapter(manageJobAdaptor);
@@ -149,6 +162,9 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("Date", dateString);
                             intent.putExtra("Login", loginStrings);
                             intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
+                            intent.putExtra("planDtlId", planDtlIdString);
+                            intent.putExtra("position", positionString);
+                            intent.putExtra("planId", planIdString);
                             intent.putExtra("timeArrival", timeArrivalStrings[i]);
                             intent.putExtra("stationName", stationNameStrings[i]);
                             intent.putExtra("transporttype", transportTypeStrings[i]);
@@ -158,6 +174,9 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("Date", dateString);
                             intent.putExtra("Login", loginStrings);
                             intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
+                            intent.putExtra("planDtlId", planDtlIdString);
+                            intent.putExtra("position", positionString);
+                            intent.putExtra("planId", planIdString);
                             intent.putExtra("timeArrival", timeArrivalStrings[i]);
                             intent.putExtra("stationName", stationNameStrings[i]);
                             intent.putExtra("transporttype", transportTypeStrings[i]);
@@ -182,20 +201,23 @@ public class JobActivity extends AppCompatActivity {
 
     private class SynUpdateTripStatus extends AsyncTask<Void, Void, String> {
         String timeString, latString, longString;
+        Context context;
 
-        public SynUpdateTripStatus(String timeString, String latString, String longString) {
+        public SynUpdateTripStatus(String timeString, String latString, String longString, Context context) {
             this.timeString = timeString;
             this.latString = latString;
             this.longString = longString;
-
+            this.context = context;
         }
 
         @Override
         protected String doInBackground(Void... params) {
             try {
+
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
+                        .add("planDtl_id",planDtlIdString)
                         .add("drv_username", longString)
                         .add("Lat", latString)
                         .add("Lng", longString)
@@ -209,23 +231,43 @@ public class JobActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d("Tag", "Error  back ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
-                return null;
+                return "";
             }
         }
 
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("Tag", s);
+            if (s.equals("Success")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
+                        btnStart.setVisibility(View.INVISIBLE);
+                    }
+                });
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
     }
-
 
     private class SynUpdateTripStatusFinish extends AsyncTask<Void, Void, String> {
         String timeString, latString, longString,flagStrings;
+        Context context;
 
-        public SynUpdateTripStatusFinish(String timeString, String latString, String longString , String flagStrings) {
+        public SynUpdateTripStatusFinish(String timeString, String latString, String longString, String flagStrings, Context context) {
             this.timeString = timeString;
             this.latString = latString;
             this.longString = longString;
             this.flagStrings = flagStrings;
-
-
+            this.context = context;
         }
 
         @Override
@@ -234,6 +276,7 @@ public class JobActivity extends AppCompatActivity {
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
+                        .add("planDtl_id",planDtlIdString)
                         .add("drv_username", longString)
                         .add("Lat", latString)
                         .add("Lng", longString)
@@ -247,7 +290,33 @@ public class JobActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d("Tag", "Error  back ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
-                return null;
+                return "";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            if (s.equals("Success")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(JobActivity.this, TripActivity.class);
+                        intent.putExtra("Login", loginStrings);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                Log.d("TAG", "Login ==> " + Arrays.toString(loginStrings));
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         }
     }
@@ -261,14 +330,12 @@ public class JobActivity extends AppCompatActivity {
                 final String[] lng = new String[1];
                 final String[] time = new String[1];
                 UtilityClass utilityClass = new UtilityClass(this);
-
                 if (utilityClass.setLatLong(0)) {
                     lat[0] = utilityClass.getLatString();
                     lng[0] = utilityClass.getLongString();
                     time[0] = utilityClass.getDateTime();
 
                     Log.d("Tag", "Lat/Long : Time ==> " + lat[0] + "/" + lng[0] + " : " + time[0]);
-
 
 
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -278,9 +345,8 @@ public class JobActivity extends AppCompatActivity {
 
                     dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
-                            btnStart.setVisibility(View.INVISIBLE);
-
+                            SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0],JobActivity.this);
+                            synUpdateTripStatus.execute();
                         }
                     });
 
@@ -291,12 +357,8 @@ public class JobActivity extends AppCompatActivity {
                     });
 
                     dialog.show();
-                } else {
-                    Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
-
                 }
-                SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0]);
-                synUpdateTripStatus.execute();
+
                 break;
             case R.id.button:
                 final String[] latStrings = new String[1];
@@ -311,10 +373,6 @@ public class JobActivity extends AppCompatActivity {
                     timeStrings[0] = utilityClass1.getDateTime();
                     Log.d("Tag", "Lat/Long : Time ==> " + latStrings[0] + "/" + lngStrings[0] + " : " + timeStrings[0]);
 
-
-                    SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0],"finish");
-                    synUpdateTripStatusFinish.execute();
-
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     dialog.setTitle("Finish");
                     dialog.setCancelable(true);
@@ -322,14 +380,8 @@ public class JobActivity extends AppCompatActivity {
 
                     dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(JobActivity.this,TripActivity.class);
-                            intent.putExtra("Login", loginStrings);
-                            buttonFinish.setEnabled(false);
-                            startActivity(intent);
-
-
-                            Log.d("TAG", "Login ==> " + loginStrings);
+                            SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0],"finish",JobActivity.this);
+                            synUpdateTripStatusFinish.execute();
                         }
                     });
 
@@ -341,12 +393,7 @@ public class JobActivity extends AppCompatActivity {
 
                     dialog.show();
 
-                } else {
-                    Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
                 }
-
-
-
                 break;
         }
     }

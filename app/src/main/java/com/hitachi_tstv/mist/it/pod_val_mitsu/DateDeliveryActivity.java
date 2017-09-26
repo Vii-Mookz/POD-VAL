@@ -35,7 +35,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
     @BindView(R.id.lisDADate)
     ListView lisDADate;
 
-    String[] loginStrings, deliveryDateStrings, sumjobStrings;
+    String[] loginStrings, deliveryDateStrings, sumjobStrings, planIdStrings;
     String dateString;
 
 
@@ -57,9 +57,10 @@ public class DateDeliveryActivity extends AppCompatActivity {
     }
     @OnItemClick(R.id.lisDADate)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(DateDeliveryActivity.this, JobActivity.class);
+        Intent intent = new Intent(DateDeliveryActivity.this, TripActivity.class);
         intent.putExtra("Login", loginStrings);
         intent.putExtra("Date", deliveryDateStrings[position]);
+        intent.putExtra("PlanId", planIdStrings[position]);
         Log.d("Tag", "Send ==> " + deliveryDateStrings[position] + " " + Arrays.toString(loginStrings));
         startActivity(intent);
         finish();
@@ -67,22 +68,18 @@ public class DateDeliveryActivity extends AppCompatActivity {
 
     class SyncGetDate extends AsyncTask<Void, Void, String> {
         Context context;
-        String truckIDString;
 
 
         public SyncGetDate(Context context) {
             this.context = context;
-            this.truckIDString = truckIDString;
         }
 
         @Override
         protected String doInBackground(Void... params) {
             try {
-                Log.d("Tag", "Send T==> " + loginStrings[0]);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
-//                        .add("truck_id", loginStrings[0])
                         .add("driver_id",loginStrings[0])
                         .build();
                 Request.Builder builder = new Request.Builder();
@@ -104,11 +101,13 @@ public class DateDeliveryActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray(s);
                 deliveryDateStrings = new String[jsonArray.length()];
                 sumjobStrings = new String[jsonArray.length()];
+                planIdStrings = new String[jsonArray.length()];
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     deliveryDateStrings[i] = jsonObject.getString("planDate");
                     sumjobStrings[i] = jsonObject.getString("cnt_store");
+                    planIdStrings[i] = jsonObject.getString("planId");
                 }
 
                 PlanDateAdaptor planDateAdaptor = new PlanDateAdaptor(context, deliveryDateStrings, sumjobStrings);

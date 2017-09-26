@@ -1,11 +1,18 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.IntentCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -45,13 +52,56 @@ public class TripActivity extends AppCompatActivity {
     LinearLayout middenLinTrip;
     @BindView(R.id.tripListviewTrip)
     ListView tripListviewTrip;
-    private String[][] suppSeqStrings,suppCodeStrings,suppNameStrings,planDtl2IdStrings;
-    private String[] loginStrings,positionStrings,planDtlIdStrings,placeTypeStrings,transportTypeStrings;
-    String planDateStrings,planIdString,dateString;
+    private String[][] suppSeqStrings, suppCodeStrings, suppNameStrings, planDtl2IdStrings;
+    private String[] loginStrings, positionStrings, planDtlIdStrings, placeTypeStrings, transportTypeStrings;
+    String planDateStrings, planIdString, dateString;
 
     @Override
-    public void onBackPressed() {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.logout,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle("Alert");
+                dialog.setCancelable(true);
+                dialog.setIcon(R.drawable.warning);
+                dialog.setMessage(R.string.alert_logout);
+
+                dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        ComponentName componentName = intent.getComponent();
+                        Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                        startActivity(backToMainIntent);
+                    }
+                });
+
+                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                dialog.show();
+                break;
+            case R.id.refresh:
+                Intent intent1 = new Intent(TripActivity.this, TripActivity.class);
+                intent1.putExtra("Login", loginStrings);
+                intent1.putExtra("Date", dateString);
+                startActivity(intent1);
+                finish();
+                break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -59,7 +109,6 @@ public class TripActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
         ButterKnife.bind(this);
-
 
         //get Intent data
         loginStrings = getIntent().getStringArrayExtra("Login");
@@ -70,14 +119,11 @@ public class TripActivity extends AppCompatActivity {
             SynTripData synTripData = new SynTripData(TripActivity.this);
             synTripData.execute();
         } else {
-            SynTripData synTripData = new SynTripData(TripActivity.this,planIdString);
+            SynTripData synTripData = new SynTripData(TripActivity.this, planIdString);
             synTripData.execute();
         }
 
         driverNameValTrip.setText(loginStrings[1]);
-
-        Log.d("TAG", "Driver ==>" + loginStrings[1]);
-
     }
 
     private class SynTripData extends AsyncTask<String, Void, String> {
@@ -100,10 +146,10 @@ public class TripActivity extends AppCompatActivity {
             try {
                 Log.d("Tag", "Send ==> " + planIdString);
                 OkHttpClient okHttpClient = new OkHttpClient();
-                RequestBody requestBody  =  new FormBody.Builder()
-                        .add("isAdd","true")
-                        .add("driver_id",loginStrings[0])
-                        .add("planId",planIdString)
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("isAdd", "true")
+                        .add("driver_id", loginStrings[0])
+                        .add("planId", planIdString)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -111,7 +157,7 @@ public class TripActivity extends AppCompatActivity {
                 Response response = okHttpClient.newCall(request).execute();
                 return response.body().string();
             } catch (Exception e) {
-                Log.d("Tag", "e doInBack ==>" + e.toString()+"line::"+e.getStackTrace()[0].getLineNumber());
+                Log.d("Tag", "e doInBack ==>" + e.toString() + "line::" + e.getStackTrace()[0].getLineNumber());
                 return null;
             }
 
@@ -123,11 +169,11 @@ public class TripActivity extends AppCompatActivity {
             super.onPostExecute(s);
             Log.d("Tag", "JSON---->" + s);
 
-            try{
+            try {
                 JSONObject jsonObject = new JSONObject(s);
                 JSONObject jsonObject1 = jsonObject.getJSONObject("truckInfo");
 
-                String pathImg = MyConstant.serverString+MyConstant.projectString+"/"+"app/MasterData/driver/avatar/"+loginStrings[3];
+                String pathImg = MyConstant.serverString + MyConstant.projectString + "/" + "app/MasterData/driver/avatar/" + loginStrings[3];
                 Log.d("Tag", "pathImg---->" + pathImg);
 
                 dateBtnTrip.setText(jsonObject1.getString("planDate"));
@@ -139,10 +185,10 @@ public class TripActivity extends AppCompatActivity {
                         .load(pathImg)
                         .into(imgDriverTrip);
 
-                if (loginStrings[6].equals("M") ) {
+                if (loginStrings[6].equals("M")) {
                     imgDriverTrip.setImageResource(R.drawable.male);
 
-                }else {
+                } else {
 
                     imgDriverTrip.setImageResource(R.drawable.female);
                 }
@@ -159,14 +205,14 @@ public class TripActivity extends AppCompatActivity {
                 suppNameStrings = new String[jsonArray.length()][];
                 planDtl2IdStrings = new String[jsonArray.length()][];
 
-                for(int i=0;i<jsonArray.length();i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject3 = jsonArray.getJSONObject(i);
                     planDtlIdStrings[i] = jsonObject3.getString("planDtlId");
                     placeTypeStrings[i] = jsonObject3.getString("placeType");
                     transportTypeStrings[i] = jsonObject3.getString("transport_type");
-                    positionStrings[i] = String.valueOf(i+1);
+                    positionStrings[i] = String.valueOf(i + 1);
 
-                    Log.d("Tag","------>planDtlIdStrings:::--> "+planDtlIdStrings[i]);
+                    Log.d("Tag", "------>planDtlIdStrings:::--> " + planDtlIdStrings[i]);
 
                     JSONArray detailArray = jsonObject3.getJSONArray("detail");
 
@@ -175,19 +221,19 @@ public class TripActivity extends AppCompatActivity {
                     suppNameStrings[i] = new String[detailArray.length()];
                     planDtl2IdStrings[i] = new String[detailArray.length()];
 
-                    for(int j = 0; j < detailArray.length(); j++) {
-                        JSONObject jsonObject5  = detailArray.getJSONObject(j);
+                    for (int j = 0; j < detailArray.length(); j++) {
+                        JSONObject jsonObject5 = detailArray.getJSONObject(j);
                         suppSeqStrings[i][j] = jsonObject5.getString("suppSeq");
                         suppCodeStrings[i][j] = jsonObject5.getString("suppCode");
                         suppNameStrings[i][j] = jsonObject5.getString("suppName");
                         planDtl2IdStrings[i][j] = jsonObject5.getString("planDtl2Id");
-                        Log.d("Tag","------>planDtl2Id:::--> "+i+j);
+                        Log.d("Tag", "------>planDtl2Id:::--> " + i + j);
 
                     }
                 }
 
 
-                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings,suppSeqStrings,positionStrings);
+                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings);
                 tripListviewTrip.setAdapter(tripAdapter);
 
                 tripListviewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -206,7 +252,7 @@ public class TripActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.d("Tag", "Exception:::::--->" + e +" Line : " + e.getStackTrace()[0].getLineNumber());
+                Log.d("Tag", "Exception :: " + e + " Line : " + e.getStackTrace()[0].getLineNumber());
             }
         }
     }
