@@ -52,7 +52,7 @@ public class JobActivity extends AppCompatActivity {
 
     String[] loginStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings;
 
-    String worksheetString, dateString, planNoStrings,startDepartureDateString,datePlanStrings;
+    String worksheetString, dateString, planNoStrings,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
 
 
     @Override
@@ -61,18 +61,16 @@ public class JobActivity extends AppCompatActivity {
         setContentView(R.layout.activity_job);
         ButterKnife.bind(this);
 
-//        Check login
-//        Resources res = getResources();
-//        String[] login = res.getStringArray(R.array.login_array);
         int i = 0;
         loginStrings = getIntent().getStringArrayExtra("Login");
-        dateString = getIntent().getStringExtra("Date");
         datePlanStrings = getIntent().getStringExtra("planDate");
-//        txtTripdate.setText(dateString);
+        positionString = getIntent().getStringExtra("position");
+        planIdString = getIntent().getStringExtra("planId");
+        planDtlIdString = getIntent().getStringExtra("planDtlId");
         txtTripdate.setText(datePlanStrings);
-        txtTrip.setText("Trip "+ String.valueOf(i+1));
+        txtTrip.setText("Trip "+ positionString);
 
-        Log.d("TAG", "Date -->" + datePlanStrings);
+        Log.d("TAG", "Date -->" + planIdString);
         SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
         synGetJobList.execute();
     }
@@ -97,10 +95,8 @@ public class JobActivity extends AppCompatActivity {
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("driver_id", loginStrings[0])
-                        .add("plan_id", "")
-                        .add("planDtlId", "")
-                        .add("st_departureDate","")
-
+                        .add("plan_id", planIdString)
+                        .add("planDtlId", planDtlIdString)
                         .build();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetTrip).build();
                 Response response = okHttpClient.newCall(request).execute();
@@ -166,9 +162,9 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("stationName", stationNameStrings[i]);
                             intent.putExtra("transporttype", transportTypeStrings[i]);
                             startActivity(intent);
-                    }
+                        }
 
-                }
+                    }
                 });
 
                 Log.d("Tag", "Worksheet ==> " + worksheetString);
@@ -179,9 +175,6 @@ public class JobActivity extends AppCompatActivity {
                 Log.d("Tag", "Error dddddd on post JSONArray ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
 
             }
-            Log.d("Tag", "check ==>" + worksheetString);
-            Log.d("Tag", "Name ==>" + stationNameStrings[3]);
-            Log.d("Tag", "check ==>" + timeArrivalStrings[4]);
             txtWork.setText(worksheetString);
         }
 
@@ -204,7 +197,6 @@ public class JobActivity extends AppCompatActivity {
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("drv_username", longString)
-//                        .add("truck_id", loginStrings[0])
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("stamp", timeString)
@@ -212,6 +204,44 @@ public class JobActivity extends AppCompatActivity {
 
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetUpdateDCStart).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("Tag", "Error  back ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
+                return null;
+            }
+        }
+
+    }
+
+
+    private class SynUpdateTripStatusFinish extends AsyncTask<Void, Void, String> {
+        String timeString, latString, longString,flagStrings;
+
+        public SynUpdateTripStatusFinish(String timeString, String latString, String longString , String flagStrings) {
+            this.timeString = timeString;
+            this.latString = latString;
+            this.longString = longString;
+            this.flagStrings = flagStrings;
+
+
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                RequestBody requestBody = new FormBody.Builder()
+                        .add("isAdd", "true")
+                        .add("drv_username", longString)
+                        .add("Lat", latString)
+                        .add("Lng", longString)
+                        .add("stamp", timeString)
+                        .build();
+
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.post(requestBody).url(MyConstant.urlUpdateDCFinish).build();
                 Response response = okHttpClient.newCall(request).execute();
                 return response.body().string();
             } catch (IOException e) {
@@ -231,6 +261,7 @@ public class JobActivity extends AppCompatActivity {
                 final String[] lng = new String[1];
                 final String[] time = new String[1];
                 UtilityClass utilityClass = new UtilityClass(this);
+
                 if (utilityClass.setLatLong(0)) {
                     lat[0] = utilityClass.getLatString();
                     lng[0] = utilityClass.getLongString();
@@ -238,14 +269,10 @@ public class JobActivity extends AppCompatActivity {
 
                     Log.d("Tag", "Lat/Long : Time ==> " + lat[0] + "/" + lng[0] + " : " + time[0]);
 
-                    SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0]);
-                    synUpdateTripStatus.execute();
-//                    btnStart.setEnabled(false);
-//                    btnStart.setVisibility(View.INVISIBLE);
+
 
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     dialog.setTitle("Alert");
-//                            dialog.setIcon(R.drawable.ic_launcher);
                     dialog.setCancelable(true);
                     dialog.setMessage("Do you want to save?");
 
@@ -268,50 +295,55 @@ public class JobActivity extends AppCompatActivity {
                     Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
 
                 }
-
+                SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0]);
+                synUpdateTripStatus.execute();
                 break;
             case R.id.button:
                 final String[] latStrings = new String[1];
                 final String[] lngStrings = new String[1];
                 final String[] timeStrings = new String[1];
-                        UtilityClass utilityClass1 = new UtilityClass(this);
-                        if (utilityClass1.setLatLong(0)) {
-                                latStrings[0] = utilityClass1.getLatString();
-                                lngStrings[0] = utilityClass1.getLongString();
-                                timeStrings[0] = utilityClass1.getDateTime();
-                                Log.d("Tag", "Lat/Long : Time ==> " + latStrings[0] + "/" + lngStrings[0] + " : " + timeStrings[0]);
+                UtilityClass utilityClass1 = new UtilityClass(this);
 
 
-                            SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(timeStrings[0], latStrings[0], lngStrings[0]);
-                            synUpdateTripStatus.execute();
+                if (utilityClass1.setLatLong(0)) {
+                    latStrings[0] = utilityClass1.getLatString();
+                    lngStrings[0] = utilityClass1.getLongString();
+                    timeStrings[0] = utilityClass1.getDateTime();
+                    Log.d("Tag", "Lat/Long : Time ==> " + latStrings[0] + "/" + lngStrings[0] + " : " + timeStrings[0]);
 
-                            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                            dialog.setTitle("Finish");
-//                            dialog.setIcon(R.drawable.ic_launcher);
-                            dialog.setCancelable(true);
-                            dialog.setMessage("Do you want to finish?");
 
-                            dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(JobActivity.this,DateDeliveryActivity.class);
-                                    buttonFinish.setEnabled(false);
-                                    startActivity(intent);
-                                }
-                            });
+                    SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0],"finish");
+                    synUpdateTripStatusFinish.execute();
 
-                            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                    dialog.setTitle("Finish");
+                    dialog.setCancelable(true);
+                    dialog.setMessage("Do you want to finish?");
 
-                            dialog.show();
+                    dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(JobActivity.this, "Success", Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(JobActivity.this,TripActivity.class);
+                            intent.putExtra("Login", loginStrings);
+                            buttonFinish.setEnabled(false);
+                            startActivity(intent);
 
-//
-                            } else {
-                                Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
-                            }
+
+                            Log.d("TAG", "Login ==> " + loginStrings);
+                        }
+                    });
+
+                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    dialog.show();
+
+                } else {
+                    Toast.makeText(JobActivity.this, getResources().getText(R.string.err_gps), Toast.LENGTH_LONG).show();
+                }
 
 
 

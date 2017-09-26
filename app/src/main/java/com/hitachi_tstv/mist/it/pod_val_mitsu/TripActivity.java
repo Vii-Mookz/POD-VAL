@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +23,6 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import it.sephiroth.android.library.picasso.Picasso;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,16 +35,10 @@ public class TripActivity extends AppCompatActivity {
     Button dateBtnTrip;
     @BindView(R.id.imgDriverTrip)
     ImageView imgDriverTrip;
-    @BindView(R.id.truckIdLblTrip)
-    TextView truckIdLblTrip;
     @BindView(R.id.truckIdValTrip)
     TextView truckIdValTrip;
-    @BindView(R.id.truckTypeLblTrip)
-    TextView truckTypeLblTrip;
     @BindView(R.id.truckTypeValTrip)
     TextView truckTypeValTrip;
-    @BindView(R.id.driverNameLblTrip)
-    TextView driverNameLblTrip;
     @BindView(R.id.driverNameValTrip)
     TextView driverNameValTrip;
     @BindView(R.id.middenLinTrip)
@@ -51,8 +46,13 @@ public class TripActivity extends AppCompatActivity {
     @BindView(R.id.tripListviewTrip)
     ListView tripListviewTrip;
     private String[][] suppSeqStrings,suppCodeStrings,suppNameStrings,planDtl2IdStrings;
-    private String[] loginStrings,tripString,planDtlIdStrings,placeTypeStrings,transportTypeStrings;
-//    String planDateStrings;
+    private String[] loginStrings,positionStrings,planDtlIdStrings,placeTypeStrings,transportTypeStrings;
+    String planDateStrings,planIdString,dateString;
+
+    @Override
+    public void onBackPressed() {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,42 +61,51 @@ public class TripActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-        //get Inten data
+        //get Intent data
         loginStrings = getIntent().getStringArrayExtra("Login");
+        dateString = getIntent().getStringExtra("Date");
+        planIdString = getIntent().getStringExtra("PlanId");
 
+        if (planIdString == null) {
+            SynTripData synTripData = new SynTripData(TripActivity.this);
+            synTripData.execute();
+        } else {
+            SynTripData synTripData = new SynTripData(TripActivity.this,planIdString);
+            synTripData.execute();
+        }
 
+        driverNameValTrip.setText(loginStrings[1]);
 
+        Log.d("TAG", "Driver ==>" + loginStrings[1]);
 
-        SynTripData synTripData = new SynTripData(TripActivity.this);
-        synTripData.execute();
     }
 
     private class SynTripData extends AsyncTask<String, Void, String> {
 
         private Context context;
+        private String planIdString;
 
         public SynTripData(Context context) {
             this.context = context;
+            planIdString = "";
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-
+        public SynTripData(Context context, String planIdString) {
+            this.context = context;
+            this.planIdString = planIdString;
         }
 
         @Override
         protected String doInBackground(String... strings) {
             try {
+                Log.d("Tag", "Send ==> " + planIdString);
                 OkHttpClient okHttpClient = new OkHttpClient();
-
                 RequestBody requestBody  =  new FormBody.Builder()
                         .add("isAdd","true")
                         .add("driver_id",loginStrings[0])
-                        .add("planId","")
+                        .add("planId",planIdString)
                         .build();
-                //  Log.d("Tag", "Driver:" + loginStrings[0]);
+
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlGetPlanTrip).post(requestBody).build();
                 Response response = okHttpClient.newCall(request).execute();
@@ -122,12 +131,14 @@ public class TripActivity extends AppCompatActivity {
                 Log.d("Tag", "pathImg---->" + pathImg);
 
                 dateBtnTrip.setText(jsonObject1.getString("planDate"));
+                planDateStrings = jsonObject1.getString("planDate");
                 driverNameValTrip.setText(loginStrings[1]);
                 truckIdValTrip.setText(jsonObject1.getString("license"));
                 truckTypeValTrip.setText(jsonObject1.getString("truckType_code"));
                 Picasso.with(context)
                         .load(pathImg)
                         .into(imgDriverTrip);
+
                 if (loginStrings[6].equals("M") ) {
                     imgDriverTrip.setImageResource(R.drawable.male);
 
@@ -141,6 +152,7 @@ public class TripActivity extends AppCompatActivity {
                 planDtlIdStrings = new String[jsonArray.length()];
                 placeTypeStrings = new String[jsonArray.length()];
                 transportTypeStrings = new String[jsonArray.length()];
+                positionStrings = new String[jsonArray.length()];
 
                 suppSeqStrings = new String[jsonArray.length()][];
                 suppCodeStrings = new String[jsonArray.length()][];
@@ -152,10 +164,9 @@ public class TripActivity extends AppCompatActivity {
                     planDtlIdStrings[i] = jsonObject3.getString("planDtlId");
                     placeTypeStrings[i] = jsonObject3.getString("placeType");
                     transportTypeStrings[i] = jsonObject3.getString("transport_type");
+                    positionStrings[i] = String.valueOf(i+1);
 
                     Log.d("Tag","------>planDtlIdStrings:::--> "+planDtlIdStrings[i]);
-
-                    //JSONObject jsonObject4 = jsonObject3.getJSONObject("detail");
 
                     JSONArray detailArray = jsonObject3.getJSONArray("detail");
 
@@ -176,20 +187,18 @@ public class TripActivity extends AppCompatActivity {
                 }
 
 
-                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings,suppSeqStrings,tripString);
+                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings,suppSeqStrings,positionStrings);
                 tripListviewTrip.setAdapter(tripAdapter);
 
                 tripListviewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                        String DateTrip = dateBtnTrip.toString();
                         Intent intent = new Intent(TripActivity.this, JobActivity.class);
                         intent.putExtra("Login", loginStrings);
+                        intent.putExtra("planId", planIdString);
                         intent.putExtra("planDtlId", planDtlIdStrings[i]);
-
-                        Log.d("Tag", "intent::: PlanDtlId:::--->" + planDtlIdStrings[i]);
-                        Log.d("Tag", "intent::: loginStrings:::--->" + loginStrings);
-
+                        intent.putExtra("planDate", planDateStrings);
+                        intent.putExtra("position", positionStrings[i]);
                         startActivity(intent);
                     }
                 });
@@ -197,7 +206,7 @@ public class TripActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.d("Tag", "Exception:::::--->" + e + e.getStackTrace()[0].getLineNumber());
+                Log.d("Tag", "Exception:::::--->" + e +" Line : " + e.getStackTrace()[0].getLineNumber());
             }
         }
     }

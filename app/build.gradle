@@ -32,4 +32,5 @@ dependencies {
     compile 'com.beardedhen:androidbootstrap:2.3.2'
     compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'it.sephiroth.android.library.picasso:picasso:2.5.2.4b'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

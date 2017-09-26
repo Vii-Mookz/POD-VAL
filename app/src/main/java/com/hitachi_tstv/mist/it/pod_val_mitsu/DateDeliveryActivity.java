@@ -78,7 +78,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                Log.d("Tag", "Send T==> " + truckIDString);
+                Log.d("Tag", "Send T==> " + loginStrings[0]);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
