@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -55,6 +58,31 @@ public class JobActivity extends AppCompatActivity {
 
     String worksheetString, dateString, planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                Intent intent1 = new Intent(JobActivity.this, JobActivity.class);
+                intent1.putExtra("Login", loginStrings);
+                intent1.putExtra("planDate", datePlanStrings);
+                intent1.putExtra("position", positionString);
+                intent1.putExtra("planId", planIdString);
+                intent1.putExtra("planDtlId", planDtlIdString);
+                startActivity(intent1);
+                finish();
+                break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

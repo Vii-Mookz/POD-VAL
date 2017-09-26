@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -53,6 +56,33 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     EditText PalletEditText;
 
     String[] loginStrings;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                Intent intent1 = new Intent(SupplierDeliveryActivity.this, SupplierDeliveryActivity.class);
+                intent1.putExtra("planDtl2_id", planDtl2IdString);
+                intent1.putExtra("Login", loginStrings);
+                intent1.putExtra("planDtlId", planDtlIdString);
+                intent1.putExtra("position", positionString);
+                intent1.putExtra("Date", dateString);
+                intent1.putExtra("planId", planIdString);
+                intent1.putExtra("transporttype", transportTypeString);
+                startActivity(intent1);
+                finish();
+                break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +101,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         SyncGetTripDetailPickup syncGetTripDetailPickup = new SyncGetTripDetailPickup(this);
         syncGetTripDetailPickup.execute();
     }
+
 
 
     String[] getSizeSpinner(int size) {
@@ -193,7 +224,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-                Log.d("Tag", planDtl2IdString);
+//                Log.d("Tag", planDtl2IdString);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
