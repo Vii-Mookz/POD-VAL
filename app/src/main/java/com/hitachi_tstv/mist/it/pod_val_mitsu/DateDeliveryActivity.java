@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,47 +32,32 @@ import okhttp3.Response;
 
 public class DateDeliveryActivity extends AppCompatActivity {
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(DateDeliveryActivity.this, TripActivity.class);
+        intent.putExtra("Login", loginStrings);
+        intent.putExtra("Date", dateString);
+        intent.putExtra("PlanId", planIdString);
+
+        startActivity(intent);
+        finish();
+    }
+
     @BindView(R.id.lisDADate)
     ListView lisDADate;
 
     String[] loginStrings, deliveryDateStrings, sumjobStrings, planIdStrings;
-    String dateString;
+    String dateString,planIdString;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu,menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh:
-                Intent intent1 = new Intent(DateDeliveryActivity.this, DateDeliveryActivity.class);
-                intent1.putExtra("Login", loginStrings);
-                intent1.putExtra("Date", dateString);
-                startActivity(intent1);
-                finish();
-                break;
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date_delivery);
         ButterKnife.bind(this);
-//
         loginStrings = getIntent().getStringArrayExtra("Login");
         dateString = getIntent().getStringExtra("Date");
-
-//        Check login
-//        Resources res = getResources();
-//        String[] login = res.getStringArray(R.array.login_array);
+        planIdString = getIntent().getStringExtra("planId");
 
         SyncGetDate syncGetDate = new SyncGetDate(DateDeliveryActivity.this);
         syncGetDate.execute();

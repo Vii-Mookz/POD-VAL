@@ -1,9 +1,12 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,16 +52,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     @BindView(R.id.btn_confirm)
     Button confirmButton;
 
-    String planDtl2IdString;
-    String suppCodeString;
-    String suppNameString;
-    String totalPercentageString;
-    String spinnerValueString;
-    BootstrapBrand BootstrapBrandValueString;
-    String flagArrivalString;
-    String positionString;
-    String planDtlIdString;
-    String dateString,planIdString, transportTypeString;
+    String planDtl2IdString, suppCodeString, suppNameString, totalPercentageString, spinnerValueString, flagArrivalString, positionString, planDtlIdString;
+    String dateString, planIdString, transportTypeString;
 
     @BindView(R.id.spnSDAPercentage)
     Spinner percentageSpinner;
@@ -67,10 +61,12 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     EditText PalletEditText;
 
     String[] loginStrings;
+    Boolean doubleBackPressABoolean = false;
+    BootstrapBrand BootstrapBrandValueString;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu,menu);
+        menuInflater.inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -95,6 +91,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +111,30 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         syncGetTripDetailPickup.execute();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (doubleBackPressABoolean) {
+            Intent intent = new Intent(SupplierDeliveryActivity.this, JobActivity.class);
+            intent.putExtra("Login", loginStrings);
+            intent.putExtra("planId", planIdString);
+            intent.putExtra("planDtlId", planDtlIdString);
+            intent.putExtra("planDate", dateString);
+            intent.putExtra("position", positionString);
+            startActivity(intent);
+            finish();
+        }
 
+        this.doubleBackPressABoolean = true;
+        Toast.makeText(this, getResources().getText(R.string.check_back), Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackPressABoolean = false;
+            }
+        }, 2000);
+    }
 
     String[] getSizeSpinner(int size) {
         String[] sizeStrings;
@@ -224,8 +245,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
         return sizeStrings;
     }
-
-
     BootstrapBrand[] getColorSpinner(int color) {
         BootstrapBrand[] colorStrings;
         switch (color) {
@@ -335,7 +354,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
         return colorStrings;
     }
-
     class SyncGetTripDetailPickup extends AsyncTask<Void, Void, String> {
         Context context;
 
@@ -346,7 +364,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-//                Log.d("Tag", planDtl2IdString);
+                Log.d("Tag", planDtl2IdString);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -392,10 +410,10 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
                 final String[] size = getSizeSpinner(Math.round(aFloat));
                 final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
+
                 spinnerValueString = size[0];
                 BootstrapBrandValueString = color[0];
-
-                SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size,color);
+                SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
                 percentageSpinner.setAdapter(spinnerAdaptor);
 
                 percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -420,7 +438,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     confirmButton.setEnabled(true);
 
 
-
                 } else {
                     percentageSpinner.setEnabled(false);
                     PalletEditText.setEnabled(false);
@@ -439,7 +456,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
     class SyncUpdateArrival extends AsyncTask<Void, Void, String> {
         Context context;
-        String planDtl2String, usernameString,lat,lng;
+        String planDtl2String, usernameString, lat, lng;
 
         public SyncUpdateArrival(Context context, String planDtl2String, String usernameString, String lat, String lng) {
             this.context = context;
@@ -454,8 +471,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             try {
 
 
-                Log.d("TAG", "Lat" + planDtl2IdString);
-                Log.d("TAG", "Lon" + Arrays.toString(loginStrings));
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -471,16 +486,14 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.d("Tag", "e ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
-                return "Fail";
-
+                return "";
             }
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.d("Tag", ""+s);
+            Log.d("Tag", s);
 
 
             Log.d("Tag", "Bool ==> " + (s.equals("Success")));
@@ -534,7 +547,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("Driver_Name", loginStrings[7])
                         .add("pallet_qty", qtyString)
                         .add("percent_load", percentString)
-                        .add("remarkSupp",remarkString)
+                        .add("remarkSupp", remarkString)
                         .add("Lat", lat)
                         .add("Lng", lng)
                         .build();
@@ -589,31 +602,74 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             case R.id.btn_arrival:
                 UtilityClass utilityClass = new UtilityClass(SupplierDeliveryActivity.this);
                 utilityClass.setLatLong(0);
-                String latitude = utilityClass.getLatString();
-                String longitude = utilityClass.getLongString();
-                Log.d("TAG", "Lat" + latitude);
-                Log.d(("TAG"), "Lon" + longitude);
-                if (!(latitude == null)) {
-                    SyncUpdateArrival syncUpdateArrival = new SyncUpdateArrival(SupplierDeliveryActivity.this, planDtl2IdString, loginStrings[0], latitude, longitude);
-                    syncUpdateArrival.execute();
-                } else {
-                    Toast.makeText(SupplierDeliveryActivity.this, getResources().getString(R.string.save_error), Toast.LENGTH_LONG).show();
+                final String latitude = utilityClass.getLatString();
+                final String longitude = utilityClass.getLongString();
+                if (loginStrings[4].equals("Y")) {
+                    if (utilityClass.setLatLong(0)) {
+                        // if (Double.parseDouble(utilityClass.getDistanceMeter(suppLatString, suppLonString)) >= Double.parseDouble(suppRadiusString)) {
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                        dialog.setTitle("Alert");
+                        dialog.setCancelable(true);
+                        dialog.setMessage(R.string.arrivalDialog);
+                        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (!(latitude == null)) {
+                                    SyncUpdateArrival syncUpdateArrival = new SyncUpdateArrival(SupplierDeliveryActivity.this, planDtl2IdString, loginStrings[0], latitude, longitude);
+                                    syncUpdateArrival.execute();
+                                } else {
+                                    Toast.makeText(SupplierDeliveryActivity.this, getResources().getString(R.string.save_error), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        dialog.show();
+                    }
                 }
+
                 break;
             case R.id.btn_confirm:
                 utilityClass = new UtilityClass(SupplierDeliveryActivity.this);
                 utilityClass.setLatLong(0);
-                latitude = utilityClass.getLatString();
-                longitude = utilityClass.getLongString();
+                final String latitude1 = utilityClass.getLatString();
+                final String longitude1 = utilityClass.getLongString();
                 Log.d("Tag", "Spinner ==> " + spinnerValueString);
-                if (!(latitude == null)) {
-                    SyncUpdateDeparture syncUpdateDeparture = new SyncUpdateDeparture(SupplierDeliveryActivity.this, latitude, longitude,PalletEditText.getText().toString(), spinnerValueString,commentEditText.getText().toString());
-                    syncUpdateDeparture.execute();
 
-                }else {
-                    Toast.makeText(SupplierDeliveryActivity.this, getResources().getString(R.string.save_error), Toast.LENGTH_LONG).show();
+                if (loginStrings[5].equals("Y")) {
+                    if (utilityClass.setLatLong(0)) {
+                        // if(Double.parseDouble(utilityClass.getDistanceMeter(suppLatString,suppLonString)) >= Double.parseDouble(suppRadiusString)) {
+
+                        AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
+                        dialog1.setTitle("Alert");
+                        dialog1.setCancelable(true);
+                        dialog1.setMessage(R.string.departDialog);
+
+                        dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                if (!(latitude1 == null)) {
+                                    SyncUpdateDeparture syncUpdateDeparture = new SyncUpdateDeparture(SupplierDeliveryActivity.this, latitude1, longitude1, PalletEditText.getText().toString(), spinnerValueString, commentEditText.getText().toString());
+                                    syncUpdateDeparture.execute();
+
+                                } else {
+                                    Toast.makeText(SupplierDeliveryActivity.this, getResources().getString(R.string.save_error), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+
+                        dialog1.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        dialog1.show();
+                        break;
+                    }
                 }
-                break;
         }
     }
 }

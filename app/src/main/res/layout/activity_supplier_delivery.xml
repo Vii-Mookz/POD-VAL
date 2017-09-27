@@ -86,7 +86,8 @@
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="5dp"
                 android:layout_weight="0"
-                app:animated="true"
+
+                app:animated="false"
                 app:bootstrapBrand="primary"
                 app:bootstrapMaxProgress="100"
                 app:bootstrapProgress="60"

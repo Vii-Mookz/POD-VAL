@@ -1,8 +1,8 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
-
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Yaowaluk on 21/09/2560.
+ * Created by Tunyaporn on 9/25/2017.
  */
 
 public class TripAdapter extends BaseAdapter {
@@ -25,18 +25,20 @@ public class TripAdapter extends BaseAdapter {
     TextView tripTextviewTL;
     private Context context;
     private String[][] planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings;
-    private String[] tripStrings,endarraivalDateStrings;
+    private String[] endarraivalDateStrings;
+    private String[] positionStrings;
 
-    public TripAdapter(Context context, String[][] planDtl2IdStrings, String[][] suppCodeStrings, String[][] suppNameStrings, String[][] suppSeqStrings, String[] tripStrings,String[] endarraivalDateStrings) {
+    public TripAdapter(Context context, String[][] planDtl2IdStrings, String[][] suppCodeStrings, String[][] suppNameStrings, String[][] suppSeqStrings, String[] positionStrings, String[] endarraivalDateStrings) {
 
         this.context = context;
         this.planDtl2IdStrings = planDtl2IdStrings;
         this.suppCodeStrings = suppCodeStrings;
         this.suppNameStrings = suppNameStrings;
         this.suppSeqStrings = suppSeqStrings;
-        this.tripStrings = tripStrings;
         this.endarraivalDateStrings = endarraivalDateStrings;
+        this.positionStrings = positionStrings;
     }
+
 
     @Override
     public int getCount() {
@@ -54,6 +56,7 @@ public class TripAdapter extends BaseAdapter {
         return 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (view == null) {
@@ -73,16 +76,10 @@ public class TripAdapter extends BaseAdapter {
         tripViewHolder.imgStartTL.setImageResource(R.drawable.start);
         tripViewHolder.imgEndTL.setImageResource(R.drawable.end);
 
-        tripViewHolder.tripTextviewTL.setText("Trip " + String.valueOf(i + 1));
+        tripViewHolder.tripTextviewTL.setText("Trip " + positionStrings[i]);
         tripViewHolder.stationStartTL.setText(suppCodeStrings[i][0] + ":" + suppNameStrings[i][0]);
         tripViewHolder.stationEndJobTL.setText(suppCodeStrings[i][1] + ":" + suppNameStrings[i][1]);
 
-//        tripViewHolder.tripTextviewTL.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(context, JobActivity.class);
-//            }
-//        });
         if (!endarraivalDateStrings[i].equals("")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 tripViewHolder.linearTrip.setForeground(context.getDrawable(R.drawable.layout_bg_3));
@@ -112,10 +109,9 @@ public class TripAdapter extends BaseAdapter {
         TextView stationEndJobTL;
         @BindView(R.id.linearTrip)
         LinearLayout linearTrip;
+
         TripViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
-
-
 }

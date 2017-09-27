@@ -4,27 +4,49 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher1"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter></activity>
+        <activity
+            android:name=".TripActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DateDeliveryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".JobActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PlanDeliveryActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SupplierDeliveryActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".TripActivity" />
-        <activity android:name=".DateDeliveryActivity" />
-        <activity android:name=".JobActivity" />
-        <activity android:name=".PlanDeliveryActivity" />
-        <activity android:name=".SupplierDeliveryActivity"></activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="cb5d4c3d49eea37d1668dc88f85df56d9d55bcce" />
+
+
     </application>
 
 </manifest>

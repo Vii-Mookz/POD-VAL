@@ -14,7 +14,7 @@
         android:layout_margin="@dimen/mini_margin"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        app:animated="true"
+        app:animated="false"
         app:bootstrapBrand="success"
         app:bootstrapMaxProgress="100"
         app:bootstrapSize="xl"

@@ -18,18 +18,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Vipavee on 21/09/2017.
+ * Created by Tunyaporn on 9/25/2017.
  */
 
 public class JobAdapter extends BaseAdapter {
-
     private Context context;
 
-    String dateString, tripNoString, subJobNoString,startDepartureDateString;
-    String[] placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings,receiveStatusStrings;
+    String dateString, tripNoString, subJobNoString, startDepartureDateString;
+    String[] placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, receiveStatusStrings;
     ViewHolder viewholder;
-
-
 
     public JobAdapter(Context context, String[] planDtlIdStrings, String[] stationNameStrings, String[] timeArrivalStrings, String[] placeTypeStrings, String startDepartureDateString, String[] receiveStatusStrings) {
         this.context = context;
@@ -57,7 +54,7 @@ public class JobAdapter extends BaseAdapter {
         return 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -86,21 +83,17 @@ public class JobAdapter extends BaseAdapter {
         viewholder.txtTime.setText(timeArrivalStrings[position]);
 
         if (receiveStatusStrings[position].equals("Y")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                viewholder.listJob.setForeground(context.getDrawable(R.drawable.layout_bg_3));
-                viewholder.listJob.setClickable(true);
-            }
-
+            viewholder.listJob.setForeground(context.getDrawable(R.drawable.layout_bg_3));
+            viewholder.listJob.setClickable(true);
 
 
         } else {
             viewholder.listJob.setForeground(null);
         }
         Log.d("TAG", "receieve  ==>  " + receiveStatusStrings);
+
         return convertView;
     }
-
-
 
     static class ViewHolder {
 
@@ -117,7 +110,4 @@ public class JobAdapter extends BaseAdapter {
             ButterKnife.bind(this, view);
         }
     }
-
-
-
 }

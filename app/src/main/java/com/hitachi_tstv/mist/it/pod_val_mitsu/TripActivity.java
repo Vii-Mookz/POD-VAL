@@ -57,6 +57,11 @@ public class TripActivity extends AppCompatActivity {
     String planDateStrings, planIdString, dateString;
 
     @Override
+    public void onBackPressed() {
+
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.logout,menu);
@@ -100,9 +105,9 @@ public class TripActivity extends AppCompatActivity {
                 break;
         }
 
-
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +120,7 @@ public class TripActivity extends AppCompatActivity {
         dateString = getIntent().getStringExtra("Date");
         planIdString = getIntent().getStringExtra("PlanId");
 
-        if (planIdString == null) {
+        if (planIdString == null || planIdString.equals("")) {
             SynTripData synTripData = new SynTripData(TripActivity.this);
             synTripData.execute();
         } else {
@@ -181,7 +186,6 @@ public class TripActivity extends AppCompatActivity {
                 driverNameValTrip.setText(loginStrings[1]);
                 truckIdValTrip.setText(jsonObject1.getString("license"));
                 truckTypeValTrip.setText(jsonObject1.getString("truckType_code"));
-
                 Picasso.with(context)
                         .load(pathImg)
                         .into(imgDriverTrip);
@@ -200,13 +204,12 @@ public class TripActivity extends AppCompatActivity {
                 placeTypeStrings = new String[jsonArray.length()];
                 transportTypeStrings = new String[jsonArray.length()];
                 positionStrings = new String[jsonArray.length()];
+                endarraivalDateStrings = new String[jsonArray.length()];
 
                 suppSeqStrings = new String[jsonArray.length()][];
                 suppCodeStrings = new String[jsonArray.length()][];
                 suppNameStrings = new String[jsonArray.length()][];
                 planDtl2IdStrings = new String[jsonArray.length()][];
-                endarraivalDateStrings = new String[jsonArray.length()];
-
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject3 = jsonArray.getJSONObject(i);
@@ -237,6 +240,7 @@ public class TripActivity extends AppCompatActivity {
                 }
                 Log.d("TAG", "END DATE ==>  " + endarraivalDateStrings[0]);
 
+
                 TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings,endarraivalDateStrings);
                 tripListviewTrip.setAdapter(tripAdapter);
 
@@ -266,6 +270,7 @@ public class TripActivity extends AppCompatActivity {
     public void onViewClicked() {
         Intent intent = new Intent(TripActivity.this, DateDeliveryActivity.class);
         intent.putExtra("Login", loginStrings);
+        intent.putExtra("planId", planIdString);
         startActivity(intent);
     }
 }

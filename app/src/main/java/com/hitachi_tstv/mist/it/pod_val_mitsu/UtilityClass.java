@@ -1,17 +1,26 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,10 +32,50 @@ import java.util.Locale;
 public class UtilityClass {
     private LocationManager locationManager;
     private Context context;
-    private String latString, longString , timeString;
+    private String latString, longString, timeString;
+
+    private float percentage;
+
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            percentage = (level / (float) scale) * 100;
+        }
+    };
+
+    String getDeviceID() {
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        return telephonyManager.getDeviceId();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    String getSerial() {
+        String serial = null;
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class, String.class);
+            serial = (String) get.invoke(c, "ril.serialnumber", "unknown");
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return serial;
+    }
+
+    void getBattery() {
+
+        IntentFilter iFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+
+        // Register the broadcast receiver
+        context.registerReceiver(mBroadcastReceiver, iFilter);
+        Log.d("VAL-Tag-GPS", "Battery ==> " + percentage);
+
+    }
 
     public UtilityClass(Context context) {
         this.context = context;
+        latString = "Unknown";
+        longString = "Unknown";
     }
 
     private Location requestLocation(String strProvider, String strError) {
@@ -102,7 +151,7 @@ public class UtilityClass {
         return result;
     }
 
-    String getDistanceMeter(String storeLatString,String storeLngString){
+    String getDistanceMeter(String storeLatString, String storeLngString) {
         String strLat = latString;
         String strLng = longString;
 
@@ -129,7 +178,7 @@ public class UtilityClass {
         }
     }
 
-    String getDistanceKiloMeter(String storeLatString,String storeLngString){
+    String getDistanceKiloMeter(String storeLatString, String storeLngString) {
         String strLat = latString;
         String strLng = longString;
 
@@ -213,4 +262,6 @@ public class UtilityClass {
         timeString = timeFormat.format(date);
         return dateFormat.format(date);
     }
+
+
 }

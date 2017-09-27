@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Proof of Delivery</string>
+    <string name="app_name">POD VAL</string>
     <string name="Login">Login</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
@@ -10,6 +10,9 @@
     <string name="Finish">Finish</string>
     <string name="err_gps1">Can\'t get Lat/Long Please Try Again</string>
     <string name="errLogin">Login Fail!! Please Try Again</string>
+    <string name="pallet">Pallet</string>
+    <string name="save_success">Save Success</string>
+    <string name="save_error">Save Fail!!! Please Try Again</string>
     <string name="Date">Date</string>
     <string name="Plan">Plan</string>
     <string name="Header">Header</string>
@@ -24,21 +27,15 @@
     <string name="truck_type">Truck Type : </string>
     <string name="driver_name">Driver Name  :</string>
     <string name="trip">Trip</string>
-    <string name="save_success">Save Success</string>
-    <string name="save_error">Save Fail!!! Please Try Again</string>
     <string name="departure">Depart</string>
-    <string name="pallet">Pallet</string>
+    <string name="check_exit">Please click BACK again to exit</string>
+    <string name="login_success">Login Success</string>
+    <string name="check_back">Please click BACK again to back page</string>
     <string name="refresh">Refresh</string>
     <string name="logout">Logout</string>
     <string name="alert_logout">Do you want to logout?</string>
-
-
-    <string-array name="login_array">
-            <item>abc</item>
-            <item>VAL-AMA-133</item>
-            <item>Earth</item>
-            <item>Mars</item>
-        </string-array>
+    <string name="departDialog">Depart complete</string>
+    <string name="arrivalDialog">Arrival complete</string>
 
 
 </resources>
