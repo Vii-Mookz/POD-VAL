@@ -53,7 +53,7 @@ public class TripActivity extends AppCompatActivity {
     @BindView(R.id.tripListviewTrip)
     ListView tripListviewTrip;
     private String[][] suppSeqStrings, suppCodeStrings, suppNameStrings, planDtl2IdStrings;
-    private String[] loginStrings, positionStrings, planDtlIdStrings, placeTypeStrings, transportTypeStrings;
+    private String[] loginStrings, positionStrings, planDtlIdStrings, placeTypeStrings, transportTypeStrings,endarraivalDateStrings;
     String planDateStrings, planIdString, dateString;
 
     @Override
@@ -181,6 +181,7 @@ public class TripActivity extends AppCompatActivity {
                 driverNameValTrip.setText(loginStrings[1]);
                 truckIdValTrip.setText(jsonObject1.getString("license"));
                 truckTypeValTrip.setText(jsonObject1.getString("truckType_code"));
+
                 Picasso.with(context)
                         .load(pathImg)
                         .into(imgDriverTrip);
@@ -204,12 +205,15 @@ public class TripActivity extends AppCompatActivity {
                 suppCodeStrings = new String[jsonArray.length()][];
                 suppNameStrings = new String[jsonArray.length()][];
                 planDtl2IdStrings = new String[jsonArray.length()][];
+                endarraivalDateStrings = new String[jsonArray.length()];
+
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject3 = jsonArray.getJSONObject(i);
                     planDtlIdStrings[i] = jsonObject3.getString("planDtlId");
                     placeTypeStrings[i] = jsonObject3.getString("placeType");
                     transportTypeStrings[i] = jsonObject3.getString("transport_type");
+                    endarraivalDateStrings[i] = jsonObject3.getString("en_arrivalDate");
                     positionStrings[i] = String.valueOf(i + 1);
 
                     Log.d("Tag", "------>planDtlIdStrings:::--> " + planDtlIdStrings[i]);
@@ -231,9 +235,9 @@ public class TripActivity extends AppCompatActivity {
 
                     }
                 }
+                Log.d("TAG", "END DATE ==>  " + endarraivalDateStrings[0]);
 
-
-                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings);
+                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings,endarraivalDateStrings);
                 tripListviewTrip.setAdapter(tripAdapter);
 
                 tripListviewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {

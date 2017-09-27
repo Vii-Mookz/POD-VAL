@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        loginStrings = new String[7];
+        loginStrings = new String[8];
     }
 
     class SyncGetUserLogin extends AsyncTask<Void, Void, String> {
@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         loginStrings[4] = jsonObject.getString("checkGPSIn");
                         loginStrings[5] = jsonObject.getString("checkGPSOut");
                         loginStrings[6] = jsonObject.getString("gender");
+                        loginStrings[7] = jsonObject.getString("drv_username");
 
                     }
 

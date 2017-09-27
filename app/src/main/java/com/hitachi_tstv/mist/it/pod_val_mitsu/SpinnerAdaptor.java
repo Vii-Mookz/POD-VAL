@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 
 import com.beardedhen.androidbootstrap.BootstrapProgressBar;
+import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,10 +22,12 @@ public class SpinnerAdaptor extends BaseAdapter {
     Context context;
     String[] sizeStrings;
     SpinnerViewHolder spinnerViewHolder;
+    BootstrapBrand[] colorStrings;
 
-    public SpinnerAdaptor(Context context, String[] sizeStrings) {
+    public SpinnerAdaptor(Context context, String[] sizeStrings, BootstrapBrand[] colorStrings) {
         this.context = context;
         this.sizeStrings = sizeStrings;
+        this.colorStrings = colorStrings;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class SpinnerAdaptor extends BaseAdapter {
         }
 
         spinnerViewHolder.progressSpinner.setProgress(Integer.parseInt(sizeStrings[i]));
+        spinnerViewHolder.progressSpinner.setBootstrapBrand(colorStrings[i]);
 
         return view;
     }

@@ -18,12 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapProgressBar;
+import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand;
+import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,7 +50,15 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     @BindView(R.id.btn_confirm)
     Button confirmButton;
 
-    String planDtl2IdString, suppCodeString, suppNameString, totalPercentageString,spinnerValueString,flagArrivalString,positionString, planDtlIdString;
+    String planDtl2IdString;
+    String suppCodeString;
+    String suppNameString;
+    String totalPercentageString;
+    String spinnerValueString;
+    BootstrapBrand BootstrapBrandValueString;
+    String flagArrivalString;
+    String positionString;
+    String planDtlIdString;
     String dateString,planIdString, transportTypeString;
 
     @BindView(R.id.spnSDAPercentage)
@@ -214,6 +225,117 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         return sizeStrings;
     }
 
+
+    BootstrapBrand[] getColorSpinner(int color) {
+        BootstrapBrand[] colorStrings;
+        switch (color) {
+            case 100:
+                colorStrings = new BootstrapBrand[1];
+                colorStrings[0] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 90:
+                colorStrings = new BootstrapBrand[2];
+                colorStrings[0] = DefaultBootstrapBrand.DANGER;
+                colorStrings[1] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 80:
+                colorStrings = new BootstrapBrand[3];
+                colorStrings[0] = DefaultBootstrapBrand.DANGER;
+                colorStrings[1] = DefaultBootstrapBrand.DANGER;
+                colorStrings[2] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 70:
+                colorStrings = new BootstrapBrand[4];
+                colorStrings[0] = DefaultBootstrapBrand.WARNING;
+                colorStrings[1] = DefaultBootstrapBrand.DANGER;
+                colorStrings[2] = DefaultBootstrapBrand.DANGER;
+                colorStrings[3] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 60:
+                colorStrings = new BootstrapBrand[5];
+                colorStrings[0] = DefaultBootstrapBrand.WARNING;
+                colorStrings[1] = DefaultBootstrapBrand.WARNING;
+                colorStrings[2] = DefaultBootstrapBrand.DANGER;
+                colorStrings[3] = DefaultBootstrapBrand.DANGER;
+                colorStrings[4] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 50:
+                colorStrings = new BootstrapBrand[6];
+                colorStrings[0] = DefaultBootstrapBrand.WARNING;
+                colorStrings[1] = DefaultBootstrapBrand.WARNING;
+                colorStrings[2] = DefaultBootstrapBrand.WARNING;
+                colorStrings[3] = DefaultBootstrapBrand.DANGER;
+                colorStrings[4] = DefaultBootstrapBrand.DANGER;
+                colorStrings[5] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 40:
+                colorStrings = new BootstrapBrand[7];
+                colorStrings[0] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[1] = DefaultBootstrapBrand.WARNING;
+                colorStrings[2] = DefaultBootstrapBrand.WARNING;
+                colorStrings[3] = DefaultBootstrapBrand.WARNING;
+                colorStrings[4] = DefaultBootstrapBrand.DANGER;
+                colorStrings[5] = DefaultBootstrapBrand.DANGER;
+                colorStrings[6] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 30:
+                colorStrings = new BootstrapBrand[8];
+                colorStrings[0] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[1] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[2] = DefaultBootstrapBrand.WARNING;
+                colorStrings[3] = DefaultBootstrapBrand.WARNING;
+                colorStrings[4] = DefaultBootstrapBrand.WARNING;
+                colorStrings[5] = DefaultBootstrapBrand.DANGER;
+                colorStrings[6] = DefaultBootstrapBrand.DANGER;
+                colorStrings[7] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 20:
+                colorStrings = new BootstrapBrand[9];
+                colorStrings[0] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[1] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[2] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[3] = DefaultBootstrapBrand.WARNING;
+                colorStrings[4] = DefaultBootstrapBrand.WARNING;
+                colorStrings[5] = DefaultBootstrapBrand.WARNING;
+                colorStrings[6] = DefaultBootstrapBrand.DANGER;
+                colorStrings[7] = DefaultBootstrapBrand.DANGER;
+                colorStrings[8] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 10:
+                colorStrings = new BootstrapBrand[10];
+                colorStrings[0] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[1] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[2] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[3] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[4] = DefaultBootstrapBrand.WARNING;
+                colorStrings[5] = DefaultBootstrapBrand.WARNING;
+                colorStrings[6] = DefaultBootstrapBrand.WARNING;
+                colorStrings[7] = DefaultBootstrapBrand.DANGER;
+                colorStrings[8] = DefaultBootstrapBrand.DANGER;
+                colorStrings[9] = DefaultBootstrapBrand.DANGER;
+                break;
+            case 0:
+                colorStrings = new BootstrapBrand[11];
+                colorStrings[0] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[1] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[2] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[3] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[4] = DefaultBootstrapBrand.SUCCESS;
+                colorStrings[5] = DefaultBootstrapBrand.WARNING;
+                colorStrings[6] = DefaultBootstrapBrand.WARNING;
+                colorStrings[7] = DefaultBootstrapBrand.WARNING;
+                colorStrings[8] = DefaultBootstrapBrand.DANGER;
+                colorStrings[9] = DefaultBootstrapBrand.DANGER;
+                colorStrings[10] = DefaultBootstrapBrand.DANGER;
+                break;
+            default:
+                colorStrings = null;
+                break;
+        }
+
+        return colorStrings;
+    }
+
     class SyncGetTripDetailPickup extends AsyncTask<Void, Void, String> {
         Context context;
 
@@ -269,14 +391,18 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 truckProgress.setProgress(Math.round(aFloat));
 
                 final String[] size = getSizeSpinner(Math.round(aFloat));
+                final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
                 spinnerValueString = size[0];
-                SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size);
+                BootstrapBrandValueString = color[0];
+
+                SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size,color);
                 percentageSpinner.setAdapter(spinnerAdaptor);
 
                 percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         spinnerValueString = size[i];
+                        BootstrapBrandValueString = color[i];
                     }
 
                     @Override
@@ -328,6 +454,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             try {
 
 
+                Log.d("TAG", "Lat" + planDtl2IdString);
+                Log.d("TAG", "Lon" + Arrays.toString(loginStrings));
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -343,6 +471,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d("Tag", "e ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
                 return "Fail";
 
             }
@@ -351,7 +480,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            Log.d("Tag", s);
+            Log.d("Tag", ""+s);
 
 
             Log.d("Tag", "Bool ==> " + (s.equals("Success")));
@@ -462,6 +591,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 utilityClass.setLatLong(0);
                 String latitude = utilityClass.getLatString();
                 String longitude = utilityClass.getLongString();
+                Log.d("TAG", "Lat" + latitude);
+                Log.d(("TAG"), "Lon" + longitude);
                 if (!(latitude == null)) {
                     SyncUpdateArrival syncUpdateArrival = new SyncUpdateArrival(SupplierDeliveryActivity.this, planDtl2IdString, loginStrings[0], latitude, longitude);
                     syncUpdateArrival.execute();

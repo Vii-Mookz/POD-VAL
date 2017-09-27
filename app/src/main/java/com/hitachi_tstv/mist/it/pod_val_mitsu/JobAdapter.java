@@ -3,11 +3,15 @@ package com.hitachi_tstv.mist.it.pod_val_mitsu;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LightingColorFilter;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -21,18 +25,21 @@ public class JobAdapter extends BaseAdapter {
 
     private Context context;
 
-    String dateString, tripNoString, subJobNoString;
-    String[]  placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings;
+    String dateString, tripNoString, subJobNoString,startDepartureDateString;
+    String[] placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings,receiveStatusStrings;
     ViewHolder viewholder;
 
-    public JobAdapter(Context context, String[] planDtlIdStrings, String[] stationNameStrings, String[] timeArrivalStrings,String[] placeTypeStrings) {
+
+
+    public JobAdapter(Context context, String[] planDtlIdStrings, String[] stationNameStrings, String[] timeArrivalStrings, String[] placeTypeStrings, String startDepartureDateString, String[] receiveStatusStrings) {
         this.context = context;
         this.planDtlIdStrings = planDtlIdStrings;
         this.timeArrivalStrings = timeArrivalStrings;
         this.stationNameStrings = stationNameStrings;
         this.placeTypeStrings = placeTypeStrings;
+        this.startDepartureDateString = startDepartureDateString;
+        this.receiveStatusStrings = receiveStatusStrings;
     }
-
 
 
     @Override
@@ -50,6 +57,7 @@ public class JobAdapter extends BaseAdapter {
         return 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -67,20 +75,32 @@ public class JobAdapter extends BaseAdapter {
             viewholder = (ViewHolder) convertView.getTag();
         }
 
-        if (placeTypeStrings[position].equals("PLANT") ) {
+        if (placeTypeStrings[position].equals("PLANT")) {
             viewholder.imgView.setImageResource(R.drawable.factory);
             viewholder.imgView.setColorFilter(new LightingColorFilter(Color.BLUE, Color.BLUE));
-        }else {
+        } else {
 
             viewholder.imgView.setImageResource(R.drawable.home1);
         }
         viewholder.txtSup.setText(stationNameStrings[position]);
         viewholder.txtTime.setText(timeArrivalStrings[position]);
 
+        if (receiveStatusStrings[position].equals("Y")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                viewholder.listJob.setForeground(context.getDrawable(R.drawable.layout_bg_3));
+                viewholder.listJob.setClickable(true);
+            }
 
 
+
+        } else {
+            viewholder.listJob.setForeground(null);
+        }
+        Log.d("TAG", "receieve  ==>  " + receiveStatusStrings);
         return convertView;
     }
+
+
 
     static class ViewHolder {
 
@@ -90,8 +110,14 @@ public class JobAdapter extends BaseAdapter {
         TextView txtSup;
         @BindView(R.id.txtTime)
         TextView txtTime;
+        @BindView(R.id.listJob)
+        LinearLayout listJob;
+
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }
+
+
+
 }

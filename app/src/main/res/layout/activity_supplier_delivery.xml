@@ -87,7 +87,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="0"
                 app:animated="true"
-                app:bootstrapBrand="success"
+                app:bootstrapBrand="primary"
                 app:bootstrapMaxProgress="100"
                 app:bootstrapProgress="60"
                 app:bootstrapSize="xl"

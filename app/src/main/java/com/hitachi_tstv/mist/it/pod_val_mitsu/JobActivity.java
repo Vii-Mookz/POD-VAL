@@ -54,7 +54,7 @@ public class JobActivity extends AppCompatActivity {
     @BindView(R.id.lisJABottom)
     LinearLayout lisJABottom;
 
-    String[] loginStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings,fleetstatusString;
+    String[] loginStrings,receiveStatusStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings,fleetstatusString;
 
     String worksheetString, dateString, planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
 
@@ -157,6 +157,7 @@ public class JobActivity extends AppCompatActivity {
                 transportTypeStrings = new String[jsonArray1.length()];
                 placeTypeStrings = new String[jsonArray1.length()];
                 fleetstatusString = new String[jsonArray1.length()];
+                receiveStatusStrings = new String[jsonArray1.length()];
                 for (int j = 0; j < jsonArray1.length(); j++) {
                     JSONObject jsonObject2 = jsonArray1.getJSONObject(j);
                     planDtlIdStrings[j] = jsonObject2.getString("planDtl2_id");
@@ -165,6 +166,7 @@ public class JobActivity extends AppCompatActivity {
                     transportTypeStrings[j] = jsonObject2.getString("transport_type");
                     placeTypeStrings[j] = jsonObject2.getString("placeType");
                     fleetstatusString[j] = jsonObject2.getString("fleet_status");
+                    receiveStatusStrings[j] = jsonObject2.getString("receiveStatus");
                 }
 
                 if (!startDepartureDateString.equals("")) {
@@ -187,7 +189,7 @@ public class JobActivity extends AppCompatActivity {
                     btnStart.setVisibility(View.VISIBLE);
                     buttonFinish.setVisibility(View.VISIBLE);
                 }
-                JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings,placeTypeStrings);
+                JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings,placeTypeStrings,startDepartureDateString,receiveStatusStrings);
                 lisJAStore.setAdapter(manageJobAdaptor);
 
                 lisJAStore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
