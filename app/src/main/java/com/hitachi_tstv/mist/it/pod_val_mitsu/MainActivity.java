@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private void requestForSpecificPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,  Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET,
                 Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS}, 101);
 
     }
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                doubleBackToExitPressedOnce = false;
             }
         }, 2000);
     }
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
-            Log.d("VAL-Tag-Main","S ==> " + s);
+            Log.d("VAL-Tag-Main", "S ==> " + s);
 
             if (!(s == null)) {
                 if (s.equals("[]")) {
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray jsonArray = new JSONArray(s);
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            for (int j = 0;j < MyConstant.getColumnLoginSize;j++) {
+                            for (int j = 0; j < MyConstant.getColumnLoginSize; j++) {
                                 loginStrings[j] = jsonObject.getString(MyConstant.getColumnLogin[j]);
                             }
                         }
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnMALogin)
     public void onViewClicked() {
-        SyncGetUserLogin syncGetUserLogin = new SyncGetUserLogin(this,usernameEditText.getText().toString(),passwordEditText.getText().toString());
+        SyncGetUserLogin syncGetUserLogin = new SyncGetUserLogin(this, usernameEditText.getText().toString(), passwordEditText.getText().toString());
         syncGetUserLogin.execute();
     }
 }

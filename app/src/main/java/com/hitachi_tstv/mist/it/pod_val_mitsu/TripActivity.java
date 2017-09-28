@@ -74,12 +74,12 @@ public class TripActivity extends AppCompatActivity {
             case R.id.logout:
 
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                dialog.setTitle("Alert");
+                dialog.setTitle(R.string.alert);
                 dialog.setCancelable(true);
                 dialog.setIcon(R.drawable.warning);
                 dialog.setMessage(R.string.alert_logout);
 
-                dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         ComponentName componentName = intent.getComponent();
@@ -88,7 +88,7 @@ public class TripActivity extends AppCompatActivity {
                     }
                 });
 
-                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }

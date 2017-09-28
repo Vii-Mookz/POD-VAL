@@ -36,6 +36,10 @@
     <string name="alert_logout">Do you want to logout?</string>
     <string name="departDialog">Depart complete</string>
     <string name="arrivalDialog">Arrival complete</string>
+    <string name="alert">Alert</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="dialog_save">Do you want to save?</string>
 
 
 </resources>

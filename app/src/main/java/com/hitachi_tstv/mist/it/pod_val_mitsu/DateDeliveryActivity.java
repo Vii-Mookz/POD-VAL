@@ -168,7 +168,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
                 String date, job;
 
                 date = getResources().getString(R.string.Date) + " : " + dateStrings[position];
-                job = jobStrings[position] + " " + getResources().getString(R.string.Plan);
+                job = jobStrings[position] + " " + getResources().getString(R.string.trip);
                 viewHolder.dateTextView.setText(date);
                 viewHolder.sumjobTextView.setText(job);
 

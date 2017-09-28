@@ -377,18 +377,19 @@ public class JobActivity extends AppCompatActivity {
 
 
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                    dialog.setTitle("Alert");
+                    dialog.setTitle(R.string.alert);
                     dialog.setCancelable(true);
-                    dialog.setMessage("Do you want to save?");
+                    dialog.setIcon(R.drawable.warning);
+                    dialog.setMessage(R.string.dialog_save);
 
-                    dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0],JobActivity.this);
                             synUpdateTripStatus.execute();
                         }
                     });
 
-                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
@@ -412,18 +413,19 @@ public class JobActivity extends AppCompatActivity {
                     Log.d("Tag", "Lat/Long : Time ==> " + latStrings[0] + "/" + lngStrings[0] + " : " + timeStrings[0]);
 
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                    dialog.setTitle("Finish");
+                    dialog.setTitle(R.string.alert);
+                    dialog.setIcon(R.drawable.warning);
                     dialog.setCancelable(true);
-                    dialog.setMessage("Do you want to finish?");
+                    dialog.setMessage(R.string.dialog_save);
 
-                    dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0],"finish",JobActivity.this);
                             synUpdateTripStatusFinish.execute();
                         }
                     });
 
-                    dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }

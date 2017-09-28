@@ -608,10 +608,11 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     if (utilityClass.setLatLong(0)) {
                         // if (Double.parseDouble(utilityClass.getDistanceMeter(suppLatString, suppLonString)) >= Double.parseDouble(suppRadiusString)) {
                         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                        dialog.setTitle("Alert");
+                        dialog.setTitle(R.string.alert);
+                        dialog.setIcon(R.drawable.warning);
                         dialog.setCancelable(true);
                         dialog.setMessage(R.string.arrivalDialog);
-                        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (!(latitude == null)) {
                                     SyncUpdateArrival syncUpdateArrival = new SyncUpdateArrival(SupplierDeliveryActivity.this, planDtl2IdString, loginStrings[0], latitude, longitude);
@@ -622,7 +623,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                             }
                         });
 
-                        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
                             }
@@ -644,11 +645,12 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         // if(Double.parseDouble(utilityClass.getDistanceMeter(suppLatString,suppLonString)) >= Double.parseDouble(suppRadiusString)) {
 
                         AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
-                        dialog1.setTitle("Alert");
+                        dialog1.setTitle(R.string.alert);
+                        dialog1.setIcon(R.drawable.warning);
                         dialog1.setCancelable(true);
                         dialog1.setMessage(R.string.departDialog);
 
-                        dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        dialog1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 if (!(latitude1 == null)) {
@@ -661,7 +663,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                             }
                         });
 
-                        dialog1.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        dialog1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
                             }

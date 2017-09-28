@@ -261,7 +261,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                 final UtilityClass utilityClass = new UtilityClass(PlanDeliveryActivity.this);
 
                 Log.d("Tag", "----Lat.." + utilityClass.getLatString());
-                if(loginStrings[4].equals("Y")) {
+                if (loginStrings[4].equals("Y")) {
                     if (utilityClass.setLatLong(0)) {
                         //
                         // if(!(suppLatString.equals("Unknown") && suppLonString.equals("Unknown"))) {
@@ -271,11 +271,12 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
                         // Log.d("Tag", "----Lat.." + utilityClass.getLatString());
                         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                        dialog.setTitle("Alert");
+                        dialog.setTitle(R.string.alert);
+                        dialog.setIcon(R.drawable.warning);
                         dialog.setCancelable(true);
                         dialog.setMessage(R.string.arrivalDialog);
 
-                        AlertDialog.Builder builder = dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        AlertDialog.Builder builder = dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (utilityClass.setLatLong(0)) {
                                     SynUpdateArrival synUpdateArrival = new SynUpdateArrival(utilityClass.getLatString(), utilityClass.getLongString(), utilityClass.getTimeString());
@@ -287,7 +288,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                             }
                         });
 
-                        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
                             }
@@ -299,16 +300,17 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
             case R.id.btn_confirm:
                 final UtilityClass utilityClass1 = new UtilityClass(PlanDeliveryActivity.this);
-                if(loginStrings[5].equals("Y")){
-                    if(utilityClass1.setLatLong(0)){
+                if (loginStrings[5].equals("Y")) {
+                    if (utilityClass1.setLatLong(0)) {
                         // if(Double.parseDouble(utilityClass1.getDistanceMeter(suppLatString,suppLonString)) <= Double.parseDouble(suppRadiusString)) {
 
                         AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
-                        dialog1.setTitle("Alert");
+                        dialog1.setTitle(R.string.alert);
+                        dialog1.setIcon(R.drawable.warning);
                         dialog1.setCancelable(true);
                         dialog1.setMessage(R.string.departDialog);
 
-                        dialog1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        dialog1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 if (utilityClass1.setLatLong(0)) {
@@ -320,7 +322,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                             }
                         });
 
-                        dialog1.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        dialog1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
                             }
@@ -339,9 +341,6 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
 
     }
-
-
-
 
 
 }
