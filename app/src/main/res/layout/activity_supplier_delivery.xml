@@ -90,7 +90,6 @@
                 app:animated="false"
                 app:bootstrapBrand="primary"
                 app:bootstrapMaxProgress="100"
-                app:bootstrapProgress="60"
                 app:bootstrapSize="xl"
                 app:bootstrapshowPercentage="true"
                 app:striped="true" />
@@ -118,7 +117,7 @@
                 android:layout_marginRight="40dp"
                 android:layout_weight="0.52"
                 android:ems="10"
-                android:hint="Comment...."
+                android:hint="@string/comment"
                 android:inputType="textPersonName"
                 android:padding="10dp"
                 android:textSize="@dimen/txt_h3" />
@@ -229,7 +228,7 @@
             android:background="@drawable/green_button"
             android:paddingEnd="20dp"
             android:paddingStart="20dp"
-            android:text="Arrival"
+            android:text="@string/arrival"
             android:textSize="@dimen/txt_h3"
             android:textStyle="bold" />
 

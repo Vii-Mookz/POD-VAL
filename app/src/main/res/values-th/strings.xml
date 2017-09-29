@@ -28,13 +28,13 @@
     <string name="check_back">กรุณากดปุ่มย้อนกลับ อีกครั้งเพื่อทำการกลับสู่หน้าก่อนหน้านี้</string>
     <string name="refresh">โหลดหน้าใหม่</string>
     <string name="logout">ออกจากระบบ</string>
-    <string name="alert_logout">คุณต้องการออกจากระบบหรือไม่?</string>
-    <string name="departDialog">ออกเดินทางเรียบร้อยแล้ว</string>
-    <string name="arrivalDialog">ถึงจุดหมายแล้ว</string>
+    <string name="alert_logout">คุณต้องการออกจากระบบใช่หรือไม่?</string>
+    <string name="departDialog">ยืนยันการรับ/ส่งสินค้าเรียบร้อยแล้วใช่หรือไม่?</string>
+    <string name="arrivalDialog">ถึงจุดหมายแล้วใช่หรือไม่?</string>
     <string name="alert">แจ้งเตือน</string>
     <string name="yes">ตกลง</string>
     <string name="no">ยกเลิก</string>
     <string name="dialog_save">คุณต้องการบันทึกข้อมูลใช่หรือไม่?</string>
-
-
+    <string name="arrival">ถึงจุดหมาย</string>
+    <string name="comment">หมายเหตุ....</string>
 </resources>

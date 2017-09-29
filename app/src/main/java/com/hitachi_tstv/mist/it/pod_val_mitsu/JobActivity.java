@@ -56,13 +56,22 @@ public class JobActivity extends AppCompatActivity {
 
     String[] loginStrings,receiveStatusStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings,fleetstatusString;
 
-    String worksheetString, dateString, planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
+    String worksheetString,  planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.main_menu,menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(JobActivity.this, TripActivity.class);
+        intent.putExtra("Login", loginStrings);
+        intent.putExtra("Date", datePlanStrings);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -97,7 +106,7 @@ public class JobActivity extends AppCompatActivity {
         planIdString = getIntent().getStringExtra("planId");
         planDtlIdString = getIntent().getStringExtra("planDtlId");
         txtTripdate.setText(datePlanStrings);
-        txtTrip.setText("Trip "+ positionString);
+        txtTrip.setText(getResources().getText(R.string.trip)+" "+ positionString);
 
         Log.d("TAG", "Date -->" + datePlanStrings);
         SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
@@ -207,6 +216,7 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("stationName", stationNameStrings[i]);
                             intent.putExtra("transporttype", transportTypeStrings[i]);
                             startActivity(intent);
+                            finish();
                         } else{
                             Intent intent = new Intent(JobActivity.this, PlanDeliveryActivity.class);
                             intent.putExtra("Date", datePlanStrings);
@@ -219,6 +229,7 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("stationName", stationNameStrings[i]);
                             intent.putExtra("transporttype", transportTypeStrings[i]);
                             startActivity(intent);
+                            finish();
                         }
 
                     }
@@ -343,6 +354,7 @@ public class JobActivity extends AppCompatActivity {
                         Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(JobActivity.this, TripActivity.class);
                         intent.putExtra("Login", loginStrings);
+                        intent.putExtra("Date", datePlanStrings);
                         startActivity(intent);
                         finish();
                     }

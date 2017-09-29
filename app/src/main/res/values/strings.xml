@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">POD VAL</string>
+    <string name="app_name" translatable="false">POD VAL</string>
     <string name="Login">Login</string>
     <string name="Username">Username</string>
     <string name="Password">Password</string>
@@ -15,12 +15,12 @@
     <string name="save_error">Save Fail!!! Please Try Again</string>
     <string name="Date">Date</string>
     <string name="Plan">Plan</string>
-    <string name="Header">Header</string>
-    <string name="ODOHint">Please add ODO Meter</string>
-    <string name="enter_start">Enter Miles Start</string>
-    <string name="enter_stop">Enter Miles Finish</string>
+    <string name="Header" translatable="false">Header</string>
+    <string name="ODOHint" translatable="false">Please add ODO Meter</string>
+    <string name="enter_start" translatable="false">Enter Miles Start</string>
+    <string name="enter_stop" translatable="false">Enter Miles Finish</string>
     <string name="OK">OK</string>
-    <string name="err_odo">Error not get ODO</string>
+    <string name="err_odo" translatable="false">Error not get ODO</string>
     <string name="cancel">Cancel</string>
     <string name="err_gps">Sorry Can\'t Get Latitude, Longitude. Please Try again</string>
     <string name="truck_license">Truck License :</string>
@@ -40,6 +40,8 @@
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="dialog_save">Do you want to save?</string>
+    <string name="arrival">ARRIVAL</string>
+    <string name="comment">Comment....</string>
 
 
 </resources>

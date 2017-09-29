@@ -68,7 +68,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
         intent.putExtra("Login", loginStrings);
         intent.putExtra("Date", deliveryDateStrings[position]);
         intent.putExtra("PlanId", planIdStrings[position]);
-        Log.d("Tag", "Send ==> " + deliveryDateStrings[position] + " " + Arrays.toString(loginStrings));
+        Log.d("Tag", "Send ==> " + deliveryDateStrings[position] + " " + Arrays.toString(loginStrings)+ " "+ planIdStrings[position]);
         startActivity(intent);
         finish();
     }

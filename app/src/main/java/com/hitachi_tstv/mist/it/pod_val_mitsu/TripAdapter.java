@@ -25,10 +25,10 @@ public class TripAdapter extends BaseAdapter {
     TextView tripTextviewTL;
     private Context context;
     private String[][] planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings;
-    private String[] endarraivalDateStrings;
+    private String[] endarraivalDateStrings,flag_completeStrings;
     private String[] positionStrings;
 
-    public TripAdapter(Context context, String[][] planDtl2IdStrings, String[][] suppCodeStrings, String[][] suppNameStrings, String[][] suppSeqStrings, String[] positionStrings, String[] endarraivalDateStrings) {
+    public TripAdapter(Context context, String[][] planDtl2IdStrings, String[][] suppCodeStrings, String[][] suppNameStrings, String[][] suppSeqStrings, String[] positionStrings, String[] endarraivalDateStrings, String[] flag_completeStrings) {
 
         this.context = context;
         this.planDtl2IdStrings = planDtl2IdStrings;
@@ -37,6 +37,7 @@ public class TripAdapter extends BaseAdapter {
         this.suppSeqStrings = suppSeqStrings;
         this.endarraivalDateStrings = endarraivalDateStrings;
         this.positionStrings = positionStrings;
+        this.flag_completeStrings = flag_completeStrings;
     }
 
 
@@ -76,17 +77,15 @@ public class TripAdapter extends BaseAdapter {
         tripViewHolder.imgStartTL.setImageResource(R.drawable.start);
         tripViewHolder.imgEndTL.setImageResource(R.drawable.end);
 
-        tripViewHolder.tripTextviewTL.setText("Trip " + positionStrings[i]);
+        tripViewHolder.tripTextviewTL.setText(context.getResources().getText(R.string.trip) + positionStrings[i]);
         tripViewHolder.stationStartTL.setText(suppCodeStrings[i][0] + ":" + suppNameStrings[i][0]);
         tripViewHolder.stationEndJobTL.setText(suppCodeStrings[i][1] + ":" + suppNameStrings[i][1]);
 
-        if (!endarraivalDateStrings[i].equals("")) {
+        if (!flag_completeStrings[i].equals("N")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 tripViewHolder.linearTrip.setForeground(context.getDrawable(R.drawable.layout_bg_3));
                 tripViewHolder.linearTrip.setClickable(true);
             }
-
-
 
         } else {
             tripViewHolder.linearTrip.setForeground(null);

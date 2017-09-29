@@ -245,6 +245,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
         return sizeStrings;
     }
+
     BootstrapBrand[] getColorSpinner(int color) {
         BootstrapBrand[] colorStrings;
         switch (color) {
@@ -354,6 +355,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
         return colorStrings;
     }
+
     class SyncGetTripDetailPickup extends AsyncTask<Void, Void, String> {
         Context context;
 
@@ -393,7 +395,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     suppCodeString = jsonObject.getString("supp_code");
-                    suppNameString = jsonObject.getString("supp_nameEn");
+                    suppNameString = jsonObject.getString("supp_name");
                     flagArrivalString = jsonObject.getString("flagArrivaled");
                     Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
                     Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
@@ -449,6 +451,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+
             }
 
         }
@@ -563,7 +566,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(final String s) {
             super.onPostExecute(s);
 
             Log.d("Tag", "S ==> " + s);
@@ -588,7 +591,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, context.getResources().getString(R.string.save_error), Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, s, Toast.LENGTH_LONG).show();
                     }
                 });
             }

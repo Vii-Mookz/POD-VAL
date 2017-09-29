@@ -27,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,7 +55,7 @@ public class TripActivity extends AppCompatActivity {
     @BindView(R.id.tripListviewTrip)
     ListView tripListviewTrip;
     private String[][] suppSeqStrings, suppCodeStrings, suppNameStrings, planDtl2IdStrings;
-    private String[] loginStrings, positionStrings, planDtlIdStrings, placeTypeStrings, transportTypeStrings,endarraivalDateStrings;
+    private String[] loginStrings,flag_completeStrings, positionStrings, planDtlIdStrings, placeTypeStrings, transportTypeStrings,endarraivalDateStrings;
     String planDateStrings, planIdString, dateString;
 
     @Override
@@ -97,9 +99,11 @@ public class TripActivity extends AppCompatActivity {
                 dialog.show();
                 break;
             case R.id.refresh:
+                Log.d("Tag", " " + dateString + " " + Arrays.toString(loginStrings) + " " + planIdString);
                 Intent intent1 = new Intent(TripActivity.this, TripActivity.class);
                 intent1.putExtra("Login", loginStrings);
                 intent1.putExtra("Date", dateString);
+                intent1.putExtra("PlanId", planIdString);
                 startActivity(intent1);
                 finish();
                 break;
@@ -205,6 +209,7 @@ public class TripActivity extends AppCompatActivity {
                 transportTypeStrings = new String[jsonArray.length()];
                 positionStrings = new String[jsonArray.length()];
                 endarraivalDateStrings = new String[jsonArray.length()];
+                flag_completeStrings = new String[jsonArray.length()];
 
                 suppSeqStrings = new String[jsonArray.length()][];
                 suppCodeStrings = new String[jsonArray.length()][];
@@ -217,6 +222,7 @@ public class TripActivity extends AppCompatActivity {
                     placeTypeStrings[i] = jsonObject3.getString("placeType");
                     transportTypeStrings[i] = jsonObject3.getString("transport_type");
                     endarraivalDateStrings[i] = jsonObject3.getString("en_arrivalDate");
+                    flag_completeStrings[i] = jsonObject3.getString("flag_complete");
                     positionStrings[i] = String.valueOf(i + 1);
 
                     Log.d("Tag", "------>planDtlIdStrings:::--> " + planDtlIdStrings[i]);
@@ -241,7 +247,7 @@ public class TripActivity extends AppCompatActivity {
                 Log.d("TAG", "END DATE ==>  " + endarraivalDateStrings[0]);
 
 
-                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings,endarraivalDateStrings);
+                TripAdapter tripAdapter = new TripAdapter(TripActivity.this, planDtl2IdStrings, suppCodeStrings, suppNameStrings, suppSeqStrings, positionStrings,endarraivalDateStrings,flag_completeStrings);
                 tripListviewTrip.setAdapter(tripAdapter);
 
                 tripListviewTrip.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -254,6 +260,7 @@ public class TripActivity extends AppCompatActivity {
                         intent.putExtra("planDate", planDateStrings);
                         intent.putExtra("position", positionStrings[i]);
                         startActivity(intent);
+                        finish();
                     }
                 });
 
@@ -272,5 +279,6 @@ public class TripActivity extends AppCompatActivity {
         intent.putExtra("Login", loginStrings);
         intent.putExtra("planId", planIdString);
         startActivity(intent);
+        finish();
     }
 }
