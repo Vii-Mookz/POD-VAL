@@ -102,6 +102,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                 intent1.putExtra("position", positionString);
                 intent1.putExtra("Date", dateString);
                 intent1.putExtra("planId", planIdString);
+                intent1.putExtra("stationName", planNameString);
                 intent1.putExtra("transporttype", transporttypeString);
                 startActivity(intent1);
                 finish();

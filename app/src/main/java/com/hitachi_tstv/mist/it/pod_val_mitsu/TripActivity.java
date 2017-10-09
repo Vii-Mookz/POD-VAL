@@ -16,12 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,8 +39,8 @@ public class TripActivity extends AppCompatActivity {
 
     @BindView(R.id.dateBtnTrip)
     Button dateBtnTrip;
-    @BindView(R.id.imgDriverTrip)
-    ImageView imgDriverTrip;
+//    @BindView(R.id.imgDriverTrip)
+//    ImageView imgDriverTrip;
     @BindView(R.id.truckIdValTrip)
     TextView truckIdValTrip;
     @BindView(R.id.truckTypeValTrip)
@@ -190,17 +187,17 @@ public class TripActivity extends AppCompatActivity {
                 driverNameValTrip.setText(loginStrings[1]);
                 truckIdValTrip.setText(jsonObject1.getString("license"));
                 truckTypeValTrip.setText(jsonObject1.getString("truckType_code"));
-                Picasso.with(context)
-                        .load(pathImg)
-                        .into(imgDriverTrip);
+//                Picasso.with(context)
+//                        .load(pathImg)
+//                        .into(imgDriverTrip);
 
-                if (loginStrings[6].equals("M")) {
-                    imgDriverTrip.setImageResource(R.drawable.male);
-
-                } else {
-
-                    imgDriverTrip.setImageResource(R.drawable.female);
-                }
+//                if (loginStrings[6].equals("M")) {
+//                    imgDriverTrip.setImageResource(R.drawable.male);
+//
+//                } else {
+//
+//                    imgDriverTrip.setImageResource(R.drawable.female);
+//                }
 
 
                 JSONArray jsonArray = jsonObject.getJSONArray("tripInfo");

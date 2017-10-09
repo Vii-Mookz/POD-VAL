@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <ImageView
@@ -27,15 +27,54 @@
                 android:tint="@color/blue"
                 app:srcCompat="@drawable/factory" />
 
-            <TextView
-                android:id="@+id/txt_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="0.60"
-                android:padding="10dp"
-                android:textColor="@color/Black"
-                android:textSize="@dimen/txt_h2"
-                android:textStyle="bold" />
+                android:layout_weight="0"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txt_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/txt_nm" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/driverNameLblTrip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:paddingRight="14dp"
+                        android:text="@string/driver_name"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/txt_nm"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/driverNameValTrip"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:textColor="@color/Black"
+                        android:textSize="@dimen/txt_nm" />
+
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

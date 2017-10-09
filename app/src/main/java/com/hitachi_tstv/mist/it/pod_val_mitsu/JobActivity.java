@@ -70,6 +70,7 @@ public class JobActivity extends AppCompatActivity {
         Intent intent = new Intent(JobActivity.this, TripActivity.class);
         intent.putExtra("Login", loginStrings);
         intent.putExtra("Date", datePlanStrings);
+        intent.putExtra("PlanId", planIdString);
         startActivity(intent);
         finish();
     }
@@ -288,22 +289,22 @@ public class JobActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             Log.d("Tag", s);
-            if (s.equals("Success")) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
-                        btnStart.setVisibility(View.INVISIBLE);
-                    }
-                });
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
-                    }
-                });
-            }
+//            if (s.equals("Success")) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
+//                        btnStart.setVisibility(View.INVISIBLE);
+//                    }
+//                });
+//            } else {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//            }
         }
     }
 
@@ -355,6 +356,7 @@ public class JobActivity extends AppCompatActivity {
                         Intent intent = new Intent(JobActivity.this, TripActivity.class);
                         intent.putExtra("Login", loginStrings);
                         intent.putExtra("Date", datePlanStrings);
+                        intent.putExtra("PlanId", planIdString);
                         startActivity(intent);
                         finish();
                     }
