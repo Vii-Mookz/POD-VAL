@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -45,8 +47,6 @@ public class TripActivity extends AppCompatActivity {
     TextView truckIdValTrip;
     @BindView(R.id.truckTypeValTrip)
     TextView truckTypeValTrip;
-    @BindView(R.id.driverNameValTrip)
-    TextView driverNameValTrip;
     @BindView(R.id.middenLinTrip)
     LinearLayout middenLinTrip;
     @BindView(R.id.tripListviewTrip)
@@ -129,33 +129,44 @@ public class TripActivity extends AppCompatActivity {
             synTripData.execute();
         }
 
-        driverNameValTrip.setText(loginStrings[1]);
+
     }
 
     private class SynTripData extends AsyncTask<String, Void, String> {
 
         private Context context;
         private String planIdString;
+        UtilityClass utilityClass;
 
         public SynTripData(Context context) {
             this.context = context;
             planIdString = "";
+            utilityClass = new UtilityClass(context);
         }
 
         public SynTripData(Context context, String planIdString) {
             this.context = context;
             this.planIdString = planIdString;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(String... strings) {
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
+                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
                 Log.d("Tag", "Send ==> " + planIdString);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("driver_id", loginStrings[0])
                         .add("planId", planIdString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -184,7 +195,7 @@ public class TripActivity extends AppCompatActivity {
 
                 dateBtnTrip.setText(jsonObject1.getString("planDate"));
                 planDateStrings = jsonObject1.getString("planDate");
-                driverNameValTrip.setText(loginStrings[1]);
+
                 truckIdValTrip.setText(jsonObject1.getString("license"));
                 truckTypeValTrip.setText(jsonObject1.getString("truckType_code"));
 //                Picasso.with(context)

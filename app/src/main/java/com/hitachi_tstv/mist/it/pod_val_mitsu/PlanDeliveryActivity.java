@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -372,19 +374,29 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
     private class SynDeliveryData extends AsyncTask<String, Void, String> {
         private Context context;
+        UtilityClass utilityClass;
 
         public SynDeliveryData(Context context) {
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(String... strings) {
 
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
+                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("planDtl2_id", planDtl2IdString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();

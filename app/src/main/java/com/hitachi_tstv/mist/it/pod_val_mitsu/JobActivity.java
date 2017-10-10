@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -54,14 +56,16 @@ public class JobActivity extends AppCompatActivity {
     @BindView(R.id.lisJABottom)
     LinearLayout lisJABottom;
 
-    String[] loginStrings,receiveStatusStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings,fleetstatusString;
+    String[] loginStrings, receiveStatusStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings, fleetstatusString;
 
-    String worksheetString,  planNoStrings, endArrivalDateString,startDepartureDateString,datePlanStrings, positionString, planIdString, planDtlIdString;
+    String worksheetString,drivernameString, planNoStrings, endArrivalDateString, startDepartureDateString, datePlanStrings, positionString, planIdString, planDtlIdString;
+    @BindView(R.id.driverNameValTrip)
+    TextView driverNameValTrip;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu,menu);
+        menuInflater.inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -107,7 +111,7 @@ public class JobActivity extends AppCompatActivity {
         planIdString = getIntent().getStringExtra("planId");
         planDtlIdString = getIntent().getStringExtra("planDtlId");
         txtTripdate.setText(datePlanStrings);
-        txtTrip.setText(getResources().getText(R.string.trip)+" "+ positionString);
+        txtTrip.setText(getResources().getText(R.string.trip) + " " + positionString);
 
         Log.d("TAG", "Date -->" + datePlanStrings);
         SynGetJobList synGetJobList = new SynGetJobList(JobActivity.this);
@@ -117,16 +121,21 @@ public class JobActivity extends AppCompatActivity {
 
     protected class SynGetJobList extends AsyncTask<Void, Void, String> {
         private Context context;
-
+        UtilityClass utilityClass;
 
         public SynGetJobList(Context context) {
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... params) {
             try {
-
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
+                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 Request.Builder builder = new Request.Builder();
                 RequestBody requestBody = new FormBody.Builder()
@@ -134,6 +143,9 @@ public class JobActivity extends AppCompatActivity {
                         .add("driver_id", loginStrings[0])
                         .add("plan_id", planIdString)
                         .add("planDtlId", planDtlIdString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name", deviceName)
                         .build();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetTrip).build();
                 Response response = okHttpClient.newCall(request).execute();
@@ -159,6 +171,8 @@ public class JobActivity extends AppCompatActivity {
                 planNoStrings = jsonObject1.getString("planNo");
                 startDepartureDateString = jsonObject1.getString("st_departureDate");
                 endArrivalDateString = jsonObject1.getString("en_arrivalDate");
+                drivernameString = jsonObject1.getString("driver_name");
+
 
                 JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
                 planDtlIdStrings = new String[jsonArray1.length()];
@@ -195,11 +209,11 @@ public class JobActivity extends AppCompatActivity {
                 if (fleetstatusString[0].equals("sub")) {
                     btnStart.setVisibility(View.GONE);
                     buttonFinish.setVisibility(View.GONE);
-                }else {
+                } else {
                     btnStart.setVisibility(View.VISIBLE);
                     buttonFinish.setVisibility(View.VISIBLE);
                 }
-                JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings,placeTypeStrings,startDepartureDateString,receiveStatusStrings);
+                JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings, placeTypeStrings, startDepartureDateString, receiveStatusStrings);
                 lisJAStore.setAdapter(manageJobAdaptor);
 
                 lisJAStore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -218,7 +232,7 @@ public class JobActivity extends AppCompatActivity {
                             intent.putExtra("transporttype", transportTypeStrings[i]);
                             startActivity(intent);
                             finish();
-                        } else{
+                        } else {
                             Intent intent = new Intent(JobActivity.this, PlanDeliveryActivity.class);
                             intent.putExtra("Date", datePlanStrings);
                             intent.putExtra("Login", loginStrings);
@@ -245,6 +259,9 @@ public class JobActivity extends AppCompatActivity {
 
             }
             txtWork.setText(worksheetString);
+            driverNameValTrip.setText(drivernameString);
+
+            Log.d("Tag", "Driver Name ==> " + drivernameString);
         }
 
     }
@@ -267,7 +284,7 @@ public class JobActivity extends AppCompatActivity {
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
-                        .add("planDtl_id",planDtlIdString)
+                        .add("planDtl_id", planDtlIdString)
                         .add("drv_username", longString)
                         .add("Lat", latString)
                         .add("Lng", longString)
@@ -289,27 +306,27 @@ public class JobActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             Log.d("Tag", s);
-//            if (s.equals("Success")) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
-//                        btnStart.setVisibility(View.INVISIBLE);
-//                    }
-//                });
-//            } else {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
-//                    }
-//                });
-//            }
+            if (s.equals("Success")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_success), Toast.LENGTH_LONG).show();
+                        btnStart.setVisibility(View.INVISIBLE);
+                    }
+                });
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.save_error), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
         }
     }
 
     private class SynUpdateTripStatusFinish extends AsyncTask<Void, Void, String> {
-        String timeString, latString, longString,flagStrings;
+        String timeString, latString, longString, flagStrings;
         Context context;
 
         public SynUpdateTripStatusFinish(String timeString, String latString, String longString, String flagStrings, Context context) {
@@ -326,7 +343,7 @@ public class JobActivity extends AppCompatActivity {
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
-                        .add("planDtl_id",planDtlIdString)
+                        .add("planDtl_id", planDtlIdString)
                         .add("drv_username", longString)
                         .add("Lat", latString)
                         .add("Lng", longString)
@@ -398,7 +415,7 @@ public class JobActivity extends AppCompatActivity {
 
                     dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0],JobActivity.this);
+                            SynUpdateTripStatus synUpdateTripStatus = new SynUpdateTripStatus(time[0], lat[0], lng[0], JobActivity.this);
                             synUpdateTripStatus.execute();
                         }
                     });
@@ -434,7 +451,7 @@ public class JobActivity extends AppCompatActivity {
 
                     dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0],"finish",JobActivity.this);
+                            SynUpdateTripStatusFinish synUpdateTripStatusFinish = new SynUpdateTripStatusFinish(timeStrings[0], latStrings[0], lngStrings[0], "finish", JobActivity.this);
                             synUpdateTripStatusFinish.execute();
                         }
                     });
@@ -451,8 +468,6 @@ public class JobActivity extends AppCompatActivity {
                 break;
         }
     }
-
-
 
 
 }

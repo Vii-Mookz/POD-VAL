@@ -3,7 +3,9 @@ package com.hitachi_tstv.mist.it.pod_val_mitsu;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,19 +77,29 @@ public class DateDeliveryActivity extends AppCompatActivity {
 
     class SyncGetDate extends AsyncTask<Void, Void, String> {
         Context context;
+        UtilityClass utilityClass;
 
 
         public SyncGetDate(Context context) {
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... params) {
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
+                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("driver_id",loginStrings[0])
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetPlanDate).build();

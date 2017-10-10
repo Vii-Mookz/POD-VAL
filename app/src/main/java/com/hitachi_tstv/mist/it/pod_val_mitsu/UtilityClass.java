@@ -1,6 +1,7 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -72,6 +73,10 @@ public class UtilityClass {
 
     }
 
+    String getDeviceName() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return bluetoothAdapter.getName();
+    }
     public UtilityClass(Context context) {
         this.context = context;
         latString = "Unknown";

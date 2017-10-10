@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestForSpecificPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET,
-                Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS}, 101);
+                Manifest.permission.BLUETOOTH,Manifest.permission.READ_PHONE_STATE, Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS}, 101);
 
     }
 
@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 String deviceId = utilityClass.getDeviceID();
                 String serial = utilityClass.getSerial();
-                Log.d("Tag", deviceId + "  " + serial);
+                String deviceName = utilityClass.getDeviceName();
+                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         .add("password", passwordString)
                         .add("device_id", deviceId)
                         .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.post(requestBody).url(MyConstant.urlGetUserLogin).build();
