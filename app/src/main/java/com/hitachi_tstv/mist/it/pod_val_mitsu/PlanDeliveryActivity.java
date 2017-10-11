@@ -1,5 +1,6 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -416,71 +418,90 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             Log.d("Tag", "OnpostExecute:::--->" + s);
 
             //JSONArray jsonArray = new JSONArray(s);
-
-            try {
-                JSONArray jsonArray = new JSONArray(s);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    suppLatString = jsonObject.getString("supp_lat");
-                    suppLonString = jsonObject.getString("supp_lon");
-                    suppRadiusString = jsonObject.getString("supp_radius");
-
-                    flagArrivalString = jsonObject.getString("flagArrivaled");
-
-                    Log.d("Tag", "suppLatString::::" + suppLatString);
-                    Log.d("Tag", "suppLonString::::" + suppLonString);
-                    Log.d("Tag", "suppRadiusString::::" + suppRadiusString);
-
-
-                    Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
-                    Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
-
-                    if (!(jsonObject.getString("total_percent_load").equals("null"))) {
-                        totalPercentageString = jsonObject.getString("total_percent_load");
-                    }else{
-                        totalPercentageString = "100";
+            if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
                     }
-                    Float aFloat = Float.parseFloat(totalPercentageString);
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
+                try {
+                    JSONArray jsonArray = new JSONArray(s);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        suppLatString = jsonObject.getString("supp_lat");
+                        suppLonString = jsonObject.getString("supp_lon");
+                        suppRadiusString = jsonObject.getString("supp_radius");
 
-                    progessTruck.setProgress(Math.round(aFloat));
+                        flagArrivalString = jsonObject.getString("flagArrivaled");
 
-                    final String[] size = getSizeSpinner(Math.round(aFloat));
-                    final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
-                    spinnerValueString = size[0];
+                        Log.d("Tag", "suppLatString::::" + suppLatString);
+                        Log.d("Tag", "suppLonString::::" + suppLonString);
+                        Log.d("Tag", "suppRadiusString::::" + suppRadiusString);
 
 
+                        Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
+                        Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
 
-                    SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size,color);
-                    percentageSpinner.setAdapter(spinnerAdaptor);
-                    percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            spinnerValueString = size[i];
+                        if (!(jsonObject.getString("total_percent_load").equals("null"))) {
+                            totalPercentageString = jsonObject.getString("total_percent_load");
+                        } else {
+                            totalPercentageString = "100";
+                        }
+                        Float aFloat = Float.parseFloat(totalPercentageString);
+
+                        progessTruck.setProgress(Math.round(aFloat));
+
+                        final String[] size = getSizeSpinner(Math.round(aFloat));
+                        final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
+                        spinnerValueString = size[0];
+
+
+                        SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
+                        percentageSpinner.setAdapter(spinnerAdaptor);
+                        percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                                spinnerValueString = size[i];
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> adapterView) {
+
+                            }
+                        });
+
+
+                        if (flagArrivalString.equals("Y")) {
+                            btnArrivalPD.setVisibility(View.INVISIBLE);
+                            percentageSpinner.setEnabled(true);
+                            btnDeparturePD.setEnabled(true);
+
+
+                        } else {
+                            btnDeparturePD.setEnabled(false);
+                            percentageSpinner.setEnabled(false);
+
                         }
 
-                        @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
-
-                        }
-                    });
-
-
-                    if (flagArrivalString.equals("Y")) {
-                        btnArrivalPD.setVisibility(View.INVISIBLE);
-                        percentageSpinner.setEnabled(true);
-                        btnDeparturePD.setEnabled(true);
-
-
-                    } else {
-                        btnDeparturePD.setEnabled(false);
-                        percentageSpinner.setEnabled(false);
-
                     }
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
         }
@@ -503,7 +524,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
                         AlertDialog.Builder builder = dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                SynUpdateArrival synUpdateArrival = new SynUpdateArrival(utilityClass.getLatString(), utilityClass.getLongString(), utilityClass.getTimeString());
+                                SynUpdateArrival synUpdateArrival = new SynUpdateArrival(utilityClass.getLatString(), utilityClass.getLongString(), utilityClass.getTimeString(),PlanDeliveryActivity.this);
                                 synUpdateArrival.execute();
                             }
                         });
@@ -533,7 +554,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
 
                                 if (utilityClass1.setLatLong(0)) {
-                                    SynUpdateDeparture synUpdateDeparture = new SynUpdateDeparture(utilityClass1.getLatString(), utilityClass1.getLongString(), utilityClass1.getTimeString(),spinnerValueString);
+                                    SynUpdateDeparture synUpdateDeparture = new SynUpdateDeparture(utilityClass1.getLatString(), utilityClass1.getLongString(), utilityClass1.getTimeString(),spinnerValueString,PlanDeliveryActivity.this);
                                     synUpdateDeparture.execute();
                                 } else {
                                     Toast.makeText(getBaseContext(), getResources().getText(R.string.err_gps1), Toast.LENGTH_SHORT).show();
@@ -560,11 +581,13 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
     private class SynUpdateArrival extends AsyncTask<Void, Void, String> {
         String latString, longString, timeString;
+        Context context;
 
-        public SynUpdateArrival(String latString, String longString, String timeString) {
+        public SynUpdateArrival(String latString, String longString, String timeString, Context context) {
             this.latString = latString;
             this.longString = longString;
             this.timeString = timeString;
+            this.context = context;
         }
 
         @Override
@@ -577,8 +600,8 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         .add("isAdd", "true")
                         .add("drv_username", loginStrings[7])
                         .add("planDtl2_id", planDtl2IdString)
-                        .add("lat", latString)
-                        .add("lng", longString)
+                        .add("Lat", latString)
+                        .add("Lng", longString)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -610,7 +633,26 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         btnDeparturePD.setEnabled(true);
                     }
                 });
-            } else {
+            } else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -623,14 +665,15 @@ public class PlanDeliveryActivity extends AppCompatActivity {
 
     private class SynUpdateDeparture extends AsyncTask<Void, Void, String> {
         String latString, longString, timeString, percentString;
+        Context context;
 
 
-
-        public SynUpdateDeparture(String latString, String longString, String timeString,String percentString) {
+        public SynUpdateDeparture(String latString, String longString, String timeString, String percentString, Context context) {
             this.latString = latString;
             this.longString = longString;
             this.timeString = timeString;
-            this.percentString  = percentString;
+            this.percentString = percentString;
+            this.context = context;
         }
 
         @Override
@@ -642,8 +685,8 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         .add("Driver_Name", loginStrings[7])
                         .add("PlanDtl2_ID", planDtl2IdString)
                         .add("percent_load", percentString)
-                        .add("lat", latString)
-                        .add("lon", longString)
+                        .add("Lat", latString)
+                        .add("Lng", longString)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -677,7 +720,26 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-            } else {
+            } else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PlanDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

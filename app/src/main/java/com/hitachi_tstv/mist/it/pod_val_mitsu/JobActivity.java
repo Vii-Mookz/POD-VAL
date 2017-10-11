@@ -1,5 +1,6 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -162,106 +164,128 @@ public class JobActivity extends AppCompatActivity {
             super.onPostExecute(s);
             Log.d("Tag", "Service ==>" + s);
 
-            try {
-
-                JSONObject jsonObject = new JSONObject(s);
-                JSONObject jsonObject1 = jsonObject.getJSONObject("tripInfo");
-
-                worksheetString = jsonObject1.getString("work_sheet_no");
-                planNoStrings = jsonObject1.getString("planNo");
-                startDepartureDateString = jsonObject1.getString("st_departureDate");
-                endArrivalDateString = jsonObject1.getString("en_arrivalDate");
-                drivernameString = jsonObject1.getString("driver_name");
-
-
-                JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
-                planDtlIdStrings = new String[jsonArray1.length()];
-                stationNameStrings = new String[jsonArray1.length()];
-                timeArrivalStrings = new String[jsonArray1.length()];
-                transportTypeStrings = new String[jsonArray1.length()];
-                placeTypeStrings = new String[jsonArray1.length()];
-                fleetstatusString = new String[jsonArray1.length()];
-                receiveStatusStrings = new String[jsonArray1.length()];
-                for (int j = 0; j < jsonArray1.length(); j++) {
-                    JSONObject jsonObject2 = jsonArray1.getJSONObject(j);
-                    planDtlIdStrings[j] = jsonObject2.getString("planDtl2_id");
-                    stationNameStrings[j] = jsonObject2.getString("suppName");
-                    timeArrivalStrings[j] = jsonObject2.getString("timeArrival");
-                    transportTypeStrings[j] = jsonObject2.getString("transport_type");
-                    placeTypeStrings[j] = jsonObject2.getString("placeType");
-                    fleetstatusString[j] = jsonObject2.getString("fleet_status");
-                    receiveStatusStrings[j] = jsonObject2.getString("receiveStatus");
-                }
-
-                if (!startDepartureDateString.equals("")) {
-                    btnStart.setVisibility(View.INVISIBLE);
-                } else {
-                    btnStart.setVisibility(View.VISIBLE);
-                    buttonFinish.setEnabled(false);
-                }
-
-                if (!endArrivalDateString.equals("")) {
-                    buttonFinish.setVisibility(View.INVISIBLE);
-                } else {
-                    buttonFinish.setVisibility(View.VISIBLE);
-                }
-
-                if (fleetstatusString[0].equals("sub")) {
-                    btnStart.setVisibility(View.GONE);
-                    buttonFinish.setVisibility(View.GONE);
-                } else {
-                    btnStart.setVisibility(View.VISIBLE);
-                    buttonFinish.setVisibility(View.VISIBLE);
-                }
-                JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings, placeTypeStrings, startDepartureDateString, receiveStatusStrings);
-                lisJAStore.setAdapter(manageJobAdaptor);
-
-                lisJAStore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        if (transportTypeStrings[i].equals("PICK UP")) {
-                            Intent intent = new Intent(JobActivity.this, SupplierDeliveryActivity.class);
-                            intent.putExtra("Date", datePlanStrings);
-                            intent.putExtra("Login", loginStrings);
-                            intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
-                            intent.putExtra("planDtlId", planDtlIdString);
-                            intent.putExtra("position", positionString);
-                            intent.putExtra("planId", planIdString);
-                            intent.putExtra("timeArrival", timeArrivalStrings[i]);
-                            intent.putExtra("stationName", stationNameStrings[i]);
-                            intent.putExtra("transporttype", transportTypeStrings[i]);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            Intent intent = new Intent(JobActivity.this, PlanDeliveryActivity.class);
-                            intent.putExtra("Date", datePlanStrings);
-                            intent.putExtra("Login", loginStrings);
-                            intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
-                            intent.putExtra("planDtlId", planDtlIdString);
-                            intent.putExtra("position", positionString);
-                            intent.putExtra("planId", planIdString);
-                            intent.putExtra("timeArrival", timeArrivalStrings[i]);
-                            intent.putExtra("stationName", stationNameStrings[i]);
-                            intent.putExtra("transporttype", transportTypeStrings[i]);
-                            startActivity(intent);
-                            finish();
-                        }
-
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
                     }
                 });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
+                try {
 
-                Log.d("Tag", "Worksheet ==> " + worksheetString);
+                    JSONObject jsonObject = new JSONObject(s);
+                    JSONObject jsonObject1 = jsonObject.getJSONObject("tripInfo");
+
+                    worksheetString = jsonObject1.getString("work_sheet_no");
+                    planNoStrings = jsonObject1.getString("planNo");
+                    startDepartureDateString = jsonObject1.getString("st_departureDate");
+                    endArrivalDateString = jsonObject1.getString("en_arrivalDate");
+                    drivernameString = jsonObject1.getString("driver_name");
 
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.d("Tag", "Error dddddd on post JSONArray ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
+                    JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
+                    planDtlIdStrings = new String[jsonArray1.length()];
+                    stationNameStrings = new String[jsonArray1.length()];
+                    timeArrivalStrings = new String[jsonArray1.length()];
+                    transportTypeStrings = new String[jsonArray1.length()];
+                    placeTypeStrings = new String[jsonArray1.length()];
+                    fleetstatusString = new String[jsonArray1.length()];
+                    receiveStatusStrings = new String[jsonArray1.length()];
+                    for (int j = 0; j < jsonArray1.length(); j++) {
+                        JSONObject jsonObject2 = jsonArray1.getJSONObject(j);
+                        planDtlIdStrings[j] = jsonObject2.getString("planDtl2_id");
+                        stationNameStrings[j] = jsonObject2.getString("suppName");
+                        timeArrivalStrings[j] = jsonObject2.getString("timeArrival");
+                        transportTypeStrings[j] = jsonObject2.getString("transport_type");
+                        placeTypeStrings[j] = jsonObject2.getString("placeType");
+                        fleetstatusString[j] = jsonObject2.getString("fleet_status");
+                        receiveStatusStrings[j] = jsonObject2.getString("receiveStatus");
+                    }
+
+                    if (!startDepartureDateString.equals("")) {
+                        btnStart.setVisibility(View.INVISIBLE);
+                    } else {
+                        btnStart.setVisibility(View.VISIBLE);
+                        buttonFinish.setEnabled(false);
+                    }
+
+                    if (!endArrivalDateString.equals("")) {
+                        buttonFinish.setVisibility(View.INVISIBLE);
+                    } else {
+                        buttonFinish.setVisibility(View.VISIBLE);
+                    }
+
+                    if (fleetstatusString[0].equals("sub")) {
+                        btnStart.setVisibility(View.GONE);
+                        buttonFinish.setVisibility(View.GONE);
+                    } else {
+                        btnStart.setVisibility(View.VISIBLE);
+                        buttonFinish.setVisibility(View.VISIBLE);
+                    }
+                    JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings, placeTypeStrings, startDepartureDateString, receiveStatusStrings);
+                    lisJAStore.setAdapter(manageJobAdaptor);
+
+                    lisJAStore.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            if (transportTypeStrings[i].equals("PICK UP")) {
+                                Intent intent = new Intent(JobActivity.this, SupplierDeliveryActivity.class);
+                                intent.putExtra("Date", datePlanStrings);
+                                intent.putExtra("Login", loginStrings);
+                                intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
+                                intent.putExtra("planDtlId", planDtlIdString);
+                                intent.putExtra("position", positionString);
+                                intent.putExtra("planId", planIdString);
+                                intent.putExtra("timeArrival", timeArrivalStrings[i]);
+                                intent.putExtra("stationName", stationNameStrings[i]);
+                                intent.putExtra("transporttype", transportTypeStrings[i]);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                Intent intent = new Intent(JobActivity.this, PlanDeliveryActivity.class);
+                                intent.putExtra("Date", datePlanStrings);
+                                intent.putExtra("Login", loginStrings);
+                                intent.putExtra("planDtl2_id", planDtlIdStrings[i]);
+                                intent.putExtra("planDtlId", planDtlIdString);
+                                intent.putExtra("position", positionString);
+                                intent.putExtra("planId", planIdString);
+                                intent.putExtra("timeArrival", timeArrivalStrings[i]);
+                                intent.putExtra("stationName", stationNameStrings[i]);
+                                intent.putExtra("transporttype", transportTypeStrings[i]);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                        }
+                    });
+
+                    Log.d("Tag", "Worksheet ==> " + worksheetString);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("Tag", "Error dddddd on post JSONArray ==> " + e + " Line " + e.getStackTrace()[0].getLineNumber());
+
+                }
+                txtWork.setText(worksheetString);
+                driverNameValTrip.setText(drivernameString);
+
+                Log.d("Tag", "Driver Name ==> " + drivernameString);
 
             }
-            txtWork.setText(worksheetString);
-            driverNameValTrip.setText(drivernameString);
-
-            Log.d("Tag", "Driver Name ==> " + drivernameString);
         }
 
     }
@@ -285,7 +309,7 @@ public class JobActivity extends AppCompatActivity {
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("planDtl_id", planDtlIdString)
-                        .add("drv_username", longString)
+                        .add("drv_username", loginStrings[7])
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("stamp", timeString)
@@ -314,7 +338,26 @@ public class JobActivity extends AppCompatActivity {
                         btnStart.setVisibility(View.INVISIBLE);
                     }
                 });
-            } else {
+            }else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -344,7 +387,7 @@ public class JobActivity extends AppCompatActivity {
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
                         .add("planDtl_id", planDtlIdString)
-                        .add("drv_username", longString)
+                        .add("drv_username", loginStrings[7])
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("stamp", timeString)
@@ -379,7 +422,26 @@ public class JobActivity extends AppCompatActivity {
                     }
                 });
                 Log.d("TAG", "Login ==> " + Arrays.toString(loginStrings));
-            } else {
+            } else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(JobActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

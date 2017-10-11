@@ -1,5 +1,6 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -401,69 +403,90 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             super.onPostExecute(s);
 
             Log.d("VAL-Tag-SupDA", s);
-
-            try {
-                JSONArray jsonArray = new JSONArray(s);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    suppCodeString = jsonObject.getString("supp_code");
-                    suppNameString = jsonObject.getString("supp_name");
-                    flagArrivalString = jsonObject.getString("flagArrivaled");
-                    Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
-                    Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
-                    if (jsonObject.getString("total_percent_load").equals("null")) {
-                        totalPercentageString = "0";
-                    } else {
-                        totalPercentageString = jsonObject.getString("total_percent_load");
-                    }
-                }
-                Float aFloat = Float.parseFloat(totalPercentageString);
-
-                nameTextView.setText(suppNameString);
-                truckProgress.setProgress(Math.round(aFloat));
-
-                final String[] size = getSizeSpinner(Math.round(aFloat));
-                final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
-
-                spinnerValueString = size[0];
-                BootstrapBrandValueString = color[0];
-                SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
-                percentageSpinner.setAdapter(spinnerAdaptor);
-
-                percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        spinnerValueString = size[i];
-                        BootstrapBrandValueString = color[i];
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
                     }
                 });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
 
-                if (flagArrivalString.equals("Y")) {
-                    arrivalButton.setVisibility(View.INVISIBLE);
+                try {
+                    JSONArray jsonArray = new JSONArray(s);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        suppCodeString = jsonObject.getString("supp_code");
+                        suppNameString = jsonObject.getString("supp_name");
+                        flagArrivalString = jsonObject.getString("flagArrivaled");
+                        Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
+                        Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
+                        if (jsonObject.getString("total_percent_load").equals("null")) {
+                            totalPercentageString = "0";
+                        } else {
+                            totalPercentageString = jsonObject.getString("total_percent_load");
+                        }
+                    }
+                    Float aFloat = Float.parseFloat(totalPercentageString);
 
-                    percentageSpinner.setEnabled(true);
-                    PalletEditText.setEnabled(true);
-                    commentEditText.setEnabled(true);
-                    confirmButton.setEnabled(true);
+                    nameTextView.setText(suppNameString);
+                    truckProgress.setProgress(Math.round(aFloat));
+
+                    final String[] size = getSizeSpinner(Math.round(aFloat));
+                    final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
+
+                    spinnerValueString = size[0];
+                    BootstrapBrandValueString = color[0];
+                    SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
+                    percentageSpinner.setAdapter(spinnerAdaptor);
+
+                    percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            spinnerValueString = size[i];
+                            BootstrapBrandValueString = color[i];
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+
+                    if (flagArrivalString.equals("Y")) {
+                        arrivalButton.setVisibility(View.INVISIBLE);
+
+                        percentageSpinner.setEnabled(true);
+                        PalletEditText.setEnabled(true);
+                        commentEditText.setEnabled(true);
+                        confirmButton.setEnabled(true);
 
 
-                } else {
-                    percentageSpinner.setEnabled(false);
-                    PalletEditText.setEnabled(false);
-                    commentEditText.setEnabled(false);
-                    confirmButton.setEnabled(false);
+                    } else {
+                        percentageSpinner.setEnabled(false);
+                        PalletEditText.setEnabled(false);
+                        commentEditText.setEnabled(false);
+                        confirmButton.setEnabled(false);
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
 
                 }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-
             }
 
         }
@@ -526,7 +549,26 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         confirmButton.setEnabled(true);
                     }
                 });
-            } else {
+            } else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -599,7 +641,26 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-            } else {
+            } else if (s.equals("notlogin")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.notlogin), Toast.LENGTH_LONG).show();
+                    }
+                });
+                onBackPressed();
+            }else if (s.equals("duplicate")){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SupplierDeliveryActivity.this, context.getResources().getText(R.string.duplicate), Toast.LENGTH_LONG).show();
+                    }
+                });
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                ComponentName componentName = intent.getComponent();
+                Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
+                startActivity(backToMainIntent);
+            }else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -92,7 +92,7 @@ public class DateDeliveryActivity extends AppCompatActivity {
                 String deviceId = utilityClass.getDeviceID();
                 String serial = utilityClass.getSerial();
                 String deviceName = utilityClass.getDeviceName();
-                Log.d("Tag", deviceId + "  " + serial + "device name " + deviceName);
+                Log.d("Tag", deviceId + "  " + serial + "device name ");
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")

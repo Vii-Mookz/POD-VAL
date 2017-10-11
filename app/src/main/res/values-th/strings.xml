@@ -37,4 +37,7 @@
     <string name="dialog_save">คุณต้องการบันทึกข้อมูลใช่หรือไม่?</string>
     <string name="arrival">ถึงจุดหมาย</string>
     <string name="comment">หมายเหตุ....</string>
+    <string name="notlogin">กรุณาติดต่อเจ้าหน้าที่ปฏิบัติการขนส่ง</string>
+    <string name="duplicate">มีการลงชื่อเข้าใช้ซ้อน กรุณาเข้าสู่ระบบใหม่อีกครั้ง</string>
+    <string name="percent_load">% การบรรทุกสินค้า</string>
 </resources>

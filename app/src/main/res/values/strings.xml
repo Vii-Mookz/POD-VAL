@@ -42,6 +42,9 @@
     <string name="dialog_save">Do you want to save?</string>
     <string name="arrival">ARRIVAL</string>
     <string name="comment">Comment....</string>
+    <string name="notlogin">Please Contact Your Operation</string>
+    <string name="duplicate">Your Login is Duplicate by other device</string>
+    <string name="percent_load">% Load on truck</string>
 
 
 </resources>
