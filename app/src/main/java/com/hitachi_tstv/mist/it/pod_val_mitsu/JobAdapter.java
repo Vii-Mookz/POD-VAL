@@ -89,6 +89,7 @@ public class JobAdapter extends BaseAdapter {
 
         } else {
             viewholder.listJob.setForeground(null);
+            viewholder.listJob.setClickable(false);
         }
         Log.d("TAG", "receieve  ==>  " + receiveStatusStrings);
 

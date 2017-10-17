@@ -293,17 +293,23 @@ public class JobActivity extends AppCompatActivity {
     private class SynUpdateTripStatus extends AsyncTask<Void, Void, String> {
         String timeString, latString, longString;
         Context context;
+        UtilityClass utilityClass;
 
         public SynUpdateTripStatus(String timeString, String latString, String longString, Context context) {
             this.timeString = timeString;
             this.latString = latString;
             this.longString = longString;
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... params) {
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
 
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
@@ -313,6 +319,9 @@ public class JobActivity extends AppCompatActivity {
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("stamp", timeString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name", deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -371,6 +380,7 @@ public class JobActivity extends AppCompatActivity {
     private class SynUpdateTripStatusFinish extends AsyncTask<Void, Void, String> {
         String timeString, latString, longString, flagStrings;
         Context context;
+        UtilityClass utilityClass;
 
         public SynUpdateTripStatusFinish(String timeString, String latString, String longString, String flagStrings, Context context) {
             this.timeString = timeString;
@@ -378,11 +388,16 @@ public class JobActivity extends AppCompatActivity {
             this.longString = longString;
             this.flagStrings = flagStrings;
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... params) {
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -391,6 +406,9 @@ public class JobActivity extends AppCompatActivity {
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("stamp", timeString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name", deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();

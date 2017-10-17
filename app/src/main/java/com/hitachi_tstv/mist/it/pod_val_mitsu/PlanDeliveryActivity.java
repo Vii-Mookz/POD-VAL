@@ -582,19 +582,25 @@ public class PlanDeliveryActivity extends AppCompatActivity {
     private class SynUpdateArrival extends AsyncTask<Void, Void, String> {
         String latString, longString, timeString;
         Context context;
+        UtilityClass utilityClass;
 
         public SynUpdateArrival(String latString, String longString, String timeString, Context context) {
             this.latString = latString;
             this.longString = longString;
             this.timeString = timeString;
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... voids) {
             try {
                 Log.d("Tag", "Lat/Long : Plan ==> " + planDtl2IdString + "," + loginStrings[7] + "," + latString+ "," +longString);
 
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -602,6 +608,9 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         .add("planDtl2_id", planDtl2IdString)
                         .add("Lat", latString)
                         .add("Lng", longString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();
@@ -666,6 +675,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
     private class SynUpdateDeparture extends AsyncTask<Void, Void, String> {
         String latString, longString, timeString, percentString;
         Context context;
+        UtilityClass utilityClass;
 
 
         public SynUpdateDeparture(String latString, String longString, String timeString, String percentString, Context context) {
@@ -674,11 +684,16 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             this.timeString = timeString;
             this.percentString = percentString;
             this.context = context;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... voids) {
             try {
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -687,6 +702,9 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         .add("percent_load", percentString)
                         .add("Lat", latString)
                         .add("Lng", longString)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
 
                 Request.Builder builder = new Request.Builder();

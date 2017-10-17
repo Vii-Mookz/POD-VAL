@@ -89,6 +89,7 @@ public class TripAdapter extends BaseAdapter {
 
         } else {
             tripViewHolder.linearTrip.setForeground(null);
+            tripViewHolder.linearTrip.setClickable(false);
         }
         Log.d("TAG", "End  ==>  " + endarraivalDateStrings[i]);
 

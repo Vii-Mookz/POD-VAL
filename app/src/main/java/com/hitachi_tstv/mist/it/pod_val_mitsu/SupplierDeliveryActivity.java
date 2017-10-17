@@ -495,6 +495,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     class SyncUpdateArrival extends AsyncTask<Void, Void, String> {
         Context context;
         String planDtl2String, usernameString, lat, lng;
+        UtilityClass utilityClass;
 
         public SyncUpdateArrival(Context context, String planDtl2String, String usernameString, String lat, String lng) {
             this.context = context;
@@ -502,13 +503,18 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             this.usernameString = usernameString;
             this.lat = lat;
             this.lng = lng;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... voids) {
             try {
 
 
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("isAdd", "true")
@@ -516,6 +522,9 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("Lat", lat)
                         .add("Lng", lng)
                         .add("drv_username", loginStrings[7])
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlUpdateArrival).post(requestBody).build();
@@ -582,6 +591,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     class SyncUpdateDeparture extends AsyncTask<Void, Void, String> {
         Context context;
         String lat, lng, qtyString, percentString, remarkString;
+        UtilityClass utilityClass;
 
         public SyncUpdateDeparture(Context context, String lat, String lng, String qtyString, String percentString, String remarkString) {
             this.context = context;
@@ -590,13 +600,18 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
             this.qtyString = qtyString;
             this.percentString = percentString;
             this.remarkString = remarkString;
+            utilityClass = new UtilityClass(context);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected String doInBackground(Void... voids) {
             try {
 
 
+                String deviceId = utilityClass.getDeviceID();
+                String serial = utilityClass.getSerial();
+                String deviceName = utilityClass.getDeviceName();
                 OkHttpClient okHttpClient = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
                         .add("PlanDtl2_ID", planDtl2IdString)
@@ -607,6 +622,9 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("remarkSupp", remarkString)
                         .add("Lat", lat)
                         .add("Lng", lng)
+                        .add("device_id", deviceId)
+                        .add("serial", serial)
+                        .add("device_name",deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlUpdateDeparture).post(requestBody).build();
