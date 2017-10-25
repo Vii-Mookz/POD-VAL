@@ -60,7 +60,7 @@ public class JobActivity extends AppCompatActivity {
 
     String[] loginStrings, receiveStatusStrings, placeTypeStrings, planDtlIdStrings, timeArrivalStrings, stationNameStrings, transportTypeStrings, fleetstatusString;
 
-    String worksheetString,drivernameString, planNoStrings, endArrivalDateString, startDepartureDateString, datePlanStrings, positionString, planIdString, planDtlIdString;
+    String worksheetString,drivernameString, planNoStrings, endArrivalDateString, startDepartureDateString, datePlanStrings, positionString, planIdString, planDtlIdString,checkBase,checkSub;
     @BindView(R.id.driverNameValTrip)
     TextView driverNameValTrip;
 
@@ -155,7 +155,7 @@ public class JobActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
 
-                return null;
+                return "";
             }
         }
 
@@ -194,6 +194,9 @@ public class JobActivity extends AppCompatActivity {
                     startDepartureDateString = jsonObject1.getString("st_departureDate");
                     endArrivalDateString = jsonObject1.getString("en_arrivalDate");
                     drivernameString = jsonObject1.getString("driver_name");
+                    checkBase = jsonObject1.getString("checkStartFinishBaseFleet");
+                    checkSub = jsonObject1.getString("checkStartFinishSub");
+
 
 
                     JSONArray jsonArray1 = jsonObject1.getJSONArray("DTL");
@@ -215,26 +218,47 @@ public class JobActivity extends AppCompatActivity {
                         receiveStatusStrings[j] = jsonObject2.getString("receiveStatus");
                     }
 
-                    if (!startDepartureDateString.equals("")) {
-                        btnStart.setVisibility(View.INVISIBLE);
-                    } else {
-                        btnStart.setVisibility(View.VISIBLE);
-                        buttonFinish.setEnabled(false);
-                    }
-
-                    if (!endArrivalDateString.equals("")) {
-                        buttonFinish.setVisibility(View.INVISIBLE);
-                    } else {
-                        buttonFinish.setVisibility(View.VISIBLE);
-                    }
-
                     if (fleetstatusString[0].equals("sub")) {
-                        btnStart.setVisibility(View.GONE);
-                        buttonFinish.setVisibility(View.GONE);
+                        if (checkSub.equals("Y")) {
+
+                            if (!startDepartureDateString.equals("")) {
+                                btnStart.setVisibility(View.INVISIBLE);
+                            } else {
+                                btnStart.setVisibility(View.VISIBLE);
+                                buttonFinish.setEnabled(false);
+                            }
+
+                            if (!endArrivalDateString.equals("")) {
+                                buttonFinish.setVisibility(View.INVISIBLE);
+                            } else {
+                                buttonFinish.setVisibility(View.VISIBLE);
+                            }
+
+                        } else {
+                            btnStart.setVisibility(View.GONE);
+                            buttonFinish.setVisibility(View.GONE);
+                        }
                     } else {
-                        btnStart.setVisibility(View.VISIBLE);
-                        buttonFinish.setVisibility(View.VISIBLE);
+                        if (checkBase.equals("Y")) {
+
+                            if (!startDepartureDateString.equals("")) {
+                                btnStart.setVisibility(View.INVISIBLE);
+                            } else {
+                                btnStart.setVisibility(View.VISIBLE);
+                                buttonFinish.setEnabled(false);
+                            }
+
+                            if (!endArrivalDateString.equals("")) {
+                                buttonFinish.setVisibility(View.INVISIBLE);
+                            } else {
+                                buttonFinish.setVisibility(View.VISIBLE);
+                            }
+                        } else {
+                            btnStart.setVisibility(View.GONE);
+                            buttonFinish.setVisibility(View.GONE);
+                        }
                     }
+
                     JobAdapter manageJobAdaptor = new JobAdapter(JobActivity.this, planDtlIdStrings, stationNameStrings, timeArrivalStrings, placeTypeStrings, startDepartureDateString, receiveStatusStrings);
                     lisJAStore.setAdapter(manageJobAdaptor);
 
