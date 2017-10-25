@@ -1,13 +1,20 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,6 +27,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +41,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +54,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.hitachi_tstv.mist.it.pod_val_mitsu.MyConstant.urlSavePicture;
+import static com.hitachi_tstv.mist.it.pod_val_mitsu.MyConstant.urlUploadPicture;
 
 public class SupplierDeliveryActivity extends AppCompatActivity {
 
@@ -55,18 +70,39 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     Button arrivalButton;
     @BindView(R.id.btn_confirm)
     Button confirmButton;
-
-    String planDtl2IdString, suppCodeString, suppNameString, totalPercentageString, spinnerValueString, flagArrivalString, positionString, planDtlIdString;
-    String dateString, planIdString, transportTypeString;
-
     @BindView(R.id.spnSDAPercentage)
     Spinner percentageSpinner;
     @BindView(R.id.editText)
     EditText PalletEditText;
+    @BindView(R.id.img_left)
+    ImageView leftImageView;
+    @BindView(R.id.img_back)
+    ImageView backImageView;
+    @BindView(R.id.img_right)
+    ImageView rightImageView;
+    @BindView(R.id.img_4)
+    ImageView fourthImageView;
+    @BindView(R.id.img_5)
+    ImageView fifthImageView;
+    @BindView(R.id.img_6)
+    ImageView sixthImageView;
+    @BindView(R.id.img_7)
+    ImageView seventhImageView;
+    @BindView(R.id.linBottom)
+    LinearLayout linBottom;
+    @BindView(R.id.btn_savepic)
+    Button savepicButton;
 
-    String[] loginStrings;
+    String planDtl2IdString, suppCodeString, suppNameString, totalPercentageString, spinnerValueString, flagArrivalString, positionString, planDtlIdString;
+    String dateString, planIdString, transportTypeString, pathSeal1String, pathSeal2String, pathSeal3String, pathPack4String, pathPack5String, pathPack6String, pathPack7String;
+    Uri seal1Uri, seal2Uri, seal3Uri, pack4Uri, pack5Uri, pack6Uri, pack7Uri;
+    Bitmap imgSeal1Bitmap, imgSeal2Bitmap, imgSeal3Bitmap, imgPack4Bitmap, imgPack5Bitmap, imgPack6Bitmap, imgPack7Bitmap;
     Boolean doubleBackPressABoolean = false;
     BootstrapBrand BootstrapBrandValueString;
+    Boolean imgSeal1ABoolean, imgSeal2ABoolean, imgSeal3ABoolean, imgPack4ABoolean, imgPack5ABoolean, imgPack6ABoolean, imgPack7ABoolean;
+    String[] loginStrings;
+    UploadImageUtils uploadImageUtils;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -96,13 +132,19 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_supplier_delivery);
         ButterKnife.bind(this);
 
+        setData();
+
+        SyncGetTripDetailPickup syncGetTripDetailPickup = new SyncGetTripDetailPickup(this);
+        syncGetTripDetailPickup.execute();
+    }
+
+    private void setData() {
         planDtl2IdString = getIntent().getStringExtra("planDtl2_id");
         loginStrings = getIntent().getStringArrayExtra("Login");
         planDtlIdString = getIntent().getStringExtra("planDtlId");
@@ -111,8 +153,21 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         planIdString = getIntent().getStringExtra("planId");
         transportTypeString = getIntent().getStringExtra("transporttype");
 
-        SyncGetTripDetailPickup syncGetTripDetailPickup = new SyncGetTripDetailPickup(this);
-        syncGetTripDetailPickup.execute();
+        pathSeal1String = "";
+        pathSeal2String = "";
+        pathSeal3String = "";
+        pathPack4String = "";
+        pathPack5String = "";
+        pathPack6String = "";
+        pathPack7String = "";
+
+        imgSeal1ABoolean = false;
+        imgSeal2ABoolean = false;
+        imgSeal3ABoolean = false;
+        imgPack4ABoolean = false;
+        imgPack5ABoolean = false;
+        imgPack6ABoolean = false;
+        imgPack7ABoolean = false;
     }
 
     @Override
@@ -384,7 +439,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("planDtl2_id", planDtl2IdString)
                         .add("device_id", deviceId)
                         .add("serial", serial)
-                        .add("device_name",deviceName)
+                        .add("device_name", deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlGetTripDetailPickup).post(requestBody).build();
@@ -411,7 +466,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     }
                 });
                 onBackPressed();
-            }else if (s.equals("duplicate")){
+            } else if (s.equals("duplicate")) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -422,7 +477,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 ComponentName componentName = intent.getComponent();
                 Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
                 startActivity(backToMainIntent);
-            }else {
+            } else {
 
                 try {
                     JSONArray jsonArray = new JSONArray(s);
@@ -431,8 +486,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         suppCodeString = jsonObject.getString("supp_code");
                         suppNameString = jsonObject.getString("supp_name");
                         flagArrivalString = jsonObject.getString("flagArrivaled");
-                        Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
-                        Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
                         if (jsonObject.getString("total_percent_load").equals("null")) {
                             totalPercentageString = "0";
                         } else {
@@ -466,8 +519,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     });
 
                     if (flagArrivalString.equals("Y")) {
-                        arrivalButton.setVisibility(View.INVISIBLE);
-
+                        arrivalButton.setVisibility(View.GONE);
+                        savepicButton.setVisibility(View.VISIBLE);
                         percentageSpinner.setEnabled(true);
                         PalletEditText.setEnabled(true);
                         commentEditText.setEnabled(true);
@@ -524,7 +577,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("drv_username", loginStrings[7])
                         .add("device_id", deviceId)
                         .add("serial", serial)
-                        .add("device_name",deviceName)
+                        .add("device_name", deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlUpdateArrival).post(requestBody).build();
@@ -550,7 +603,8 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(context, context.getResources().getString(R.string.save_success), Toast.LENGTH_LONG).show();
-                        arrivalButton.setVisibility(View.INVISIBLE);
+                        arrivalButton.setVisibility(View.GONE);
+                        savepicButton.setVisibility(View.VISIBLE);
 
                         percentageSpinner.setEnabled(true);
                         PalletEditText.setEnabled(true);
@@ -566,7 +620,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     }
                 });
                 onBackPressed();
-            }else if (s.equals("duplicate")){
+            } else if (s.equals("duplicate")) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -577,7 +631,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 ComponentName componentName = intent.getComponent();
                 Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
                 startActivity(backToMainIntent);
-            }else {
+            } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -607,8 +661,6 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-
-
                 String deviceId = utilityClass.getDeviceID();
                 String serial = utilityClass.getSerial();
                 String deviceName = utilityClass.getDeviceName();
@@ -624,7 +676,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                         .add("Lng", lng)
                         .add("device_id", deviceId)
                         .add("serial", serial)
-                        .add("device_name",deviceName)
+                        .add("device_name", deviceName)
                         .build();
                 Request.Builder builder = new Request.Builder();
                 Request request = builder.url(MyConstant.urlUpdateDeparture).post(requestBody).build();
@@ -667,7 +719,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                     }
                 });
                 onBackPressed();
-            }else if (s.equals("duplicate")){
+            } else if (s.equals("duplicate")) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -678,7 +730,7 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
                 ComponentName componentName = intent.getComponent();
                 Intent backToMainIntent = IntentCompat.makeRestartActivityTask(componentName);
                 startActivity(backToMainIntent);
-            }else {
+            } else {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -690,9 +742,329 @@ public class SupplierDeliveryActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.btn_arrival, R.id.btn_confirm})
+    private Bitmap rotateBitmap(Bitmap src) {
+
+        // create new matrix
+        Matrix matrix = new Matrix();
+        // setup rotation degree
+        matrix.postRotate(90);
+        Bitmap bmp = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
+        return bmp;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 1:
+                if (resultCode == RESULT_OK) {
+                    pathSeal1String = seal1Uri.getPath();
+                    try {
+                        imgSeal1Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(seal1Uri));
+                        if (imgSeal1Bitmap.getHeight() < imgSeal1Bitmap.getWidth()) {
+                            imgSeal1Bitmap = rotateBitmap(imgSeal1Bitmap);
+                        }
+                        leftImageView.setImageBitmap(imgSeal1Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 2:
+                if (resultCode == RESULT_OK) {
+                    pathSeal2String = seal2Uri.getPath();
+                    try{
+                        imgSeal2Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(seal2Uri));
+                        if (imgSeal2Bitmap.getHeight() < imgSeal2Bitmap.getWidth()) {
+                            imgSeal2Bitmap = rotateBitmap(imgSeal2Bitmap);
+                        }
+                        backImageView.setImageBitmap(imgSeal2Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 3:
+                if (resultCode == RESULT_OK) {
+                    pathSeal3String = seal3Uri.getPath();
+                    try{
+                        imgSeal3Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(seal3Uri));
+                        if (imgSeal3Bitmap.getHeight() < imgSeal3Bitmap.getWidth()) {
+                            imgSeal3Bitmap = rotateBitmap(imgSeal3Bitmap);
+                        }
+                        rightImageView.setImageBitmap(imgSeal3Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 4:
+                if (resultCode == RESULT_OK) {
+                    pathPack4String = pack4Uri.getPath();
+                    try{
+                        imgPack4Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack4Uri));
+                        if (imgPack4Bitmap.getHeight() < imgPack4Bitmap.getWidth()) {
+                            imgPack4Bitmap = rotateBitmap(imgPack4Bitmap);
+                        }
+                        fourthImageView.setImageBitmap(imgPack4Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 5:
+                if (resultCode == RESULT_OK) {
+                    pathPack5String = pack5Uri.getPath();
+                    try{
+                        imgPack5Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack5Uri));
+                        if (imgPack5Bitmap.getHeight() < imgPack5Bitmap.getWidth()) {
+                            imgPack5Bitmap = rotateBitmap(imgPack5Bitmap);
+                        }
+                        fifthImageView.setImageBitmap(imgPack5Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 6:
+                if (resultCode == RESULT_OK) {
+                    pathPack6String = pack6Uri.getPath();
+                    try{
+                        imgPack6Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack6Uri));
+                        if (imgPack6Bitmap.getHeight() < imgPack6Bitmap.getWidth()) {
+                            imgPack6Bitmap = rotateBitmap(imgPack6Bitmap);
+                        }
+                        sixthImageView.setImageBitmap(imgPack6Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case 7:
+                if (resultCode == RESULT_OK) {
+                    pathPack7String = pack7Uri.getPath();
+                    try{
+                        imgPack7Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack7Uri));
+                        if (imgPack7Bitmap.getHeight() < imgPack7Bitmap.getWidth()) {
+                            imgPack7Bitmap = rotateBitmap(imgPack7Bitmap);
+                        }
+                        seventhImageView.setImageBitmap(imgPack7Bitmap);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+        }
+    }
+
+    class SyncUploadPicture extends AsyncTask<Void, Void, String> {
+        Context context;
+        String mFileNameString, planDtl2_IdString;
+        Bitmap bitmap;
+        ProgressDialog progressDialog;
+
+        public SyncUploadPicture(Context context, String mFileNameString, String planDtl2_IdString, Bitmap bitmap) {
+            this.context = context;
+            this.mFileNameString = mFileNameString;
+            this.planDtl2_IdString = planDtl2_IdString;
+            this.bitmap = bitmap;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMessage(getResources().getString(R.string.loading));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            uploadImageUtils = new UploadImageUtils();
+            final String result = uploadImageUtils.uploadFile(mFileNameString, urlUploadPicture, bitmap, planDtl2_IdString, "P");
+            if (result.equals("NOK")) {
+                return "NOK";
+            } else {
+                try {
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("isAdd", "true")
+                            .add("PlanDtl2_ID",planDtl2_IdString)
+                            .add("File_Name", mFileNameString)
+                            .add("File_Path", result)
+                            .add("username", loginStrings[7])
+                            .build();
+                    Request.Builder builder = new Request.Builder();
+                    Request request = builder.post(requestBody).url(urlSavePicture).build();
+                    Response response = okHttpClient.newCall(request).execute();
+                    return response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "NOK";
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("Tag", s);
+            progressDialog.dismiss();
+
+            if (s.equals("OK")) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (mFileNameString) {
+                            case "Seal1.png":
+                                pathSeal1String = "";
+                                break;
+                            case "Seal2.png":
+                                pathSeal2String = "";
+                                break;
+                            case "Seal3.png":
+                                pathSeal3String = "";
+                                break;
+                            case "Package1.png":
+                                pathPack4String = "";
+                                break;
+                            case "Package2.png":
+                                pathPack5String = "";
+                                break;
+                            case "Package3.png":
+                                pathPack6String = "";
+                                break;
+                            case "Package4.png":
+                                pathPack7String = "";
+                                break;
+                        }
+                        Toast.makeText(context, R.string.save_pic_success, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }else{
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, R.string.save_pic_unsuccess, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+    }
+
+    @OnClick({R.id.btn_savepic, R.id.btn_arrival, R.id.btn_confirm, R.id.img_left, R.id.img_back, R.id.img_right, R.id.img_4, R.id.img_5, R.id.img_6, R.id.img_7})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.btn_savepic:
+                if (!Objects.equals(pathSeal1String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Seal1.png", planDtl2IdString, imgSeal1Bitmap);
+                    syncUploadPicture.execute();
+                }
+                if (!Objects.equals(pathSeal2String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Seal2.png", planDtl2IdString, imgSeal2Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                if (!Objects.equals(pathSeal3String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Seal3.png", planDtl2IdString, imgSeal3Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                if (!Objects.equals(pathPack4String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Package1.png", planDtl2IdString, imgPack4Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                if (!Objects.equals(pathPack5String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Package2.png", planDtl2IdString, imgPack5Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                if (!Objects.equals(pathPack6String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Package3.png", planDtl2IdString, imgPack6Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                if (!Objects.equals(pathPack7String, "")) {
+                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(SupplierDeliveryActivity.this, "Package4.png", planDtl2IdString, imgPack7Bitmap);
+                    syncUploadPicture.execute();
+
+                }
+                break;
+            case R.id.img_left:
+                if (!imgSeal1ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal1.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal1Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal1Uri);
+                    startActivityForResult(cameraIntent1, 1);
+                }
+                break;
+            case R.id.img_back:
+                if (!imgSeal2ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal2.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal2Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal2Uri);
+                    startActivityForResult(cameraIntent1, 2);
+                }
+                break;
+            case R.id.img_right:
+                if (!imgSeal3ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal3.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal3Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal3Uri);
+                    startActivityForResult(cameraIntent1, 3);
+                }
+                break;
+            case R.id.img_4:
+                if (!imgPack4ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package1.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack4Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack4Uri);
+                    startActivityForResult(cameraIntent1, 4);
+                }
+                break;
+            case R.id.img_5:
+                if (!imgPack5ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package2.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack5Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack5Uri);
+                    startActivityForResult(cameraIntent1, 5);
+                }
+                break;
+            case R.id.img_6:
+                if (!imgPack6ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package3.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack6Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack6Uri);
+                    startActivityForResult(cameraIntent1, 6);
+                }
+                break;
+            case R.id.img_7:
+                if (!imgPack7ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package4.png");
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack7Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack7Uri);
+                    startActivityForResult(cameraIntent1, 7);
+                }
+                break;
             case R.id.btn_arrival:
                 UtilityClass utilityClass = new UtilityClass(SupplierDeliveryActivity.this);
                 utilityClass.setLatLong(0);

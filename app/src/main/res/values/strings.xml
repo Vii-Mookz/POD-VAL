@@ -45,6 +45,10 @@
     <string name="notlogin">Please Contact Your Operation</string>
     <string name="duplicate">Your Login is Duplicate by other device</string>
     <string name="percent_load">% Load on truck</string>
+    <string name="Savepic">Save Picture</string>
+    <string name="save_pic_success">Save Picture Success</string>
+    <string name="save_pic_unsuccess">Save Picture Unsuccess</string>
+    <string name="loading">Loading...</string>
 
 
 </resources>

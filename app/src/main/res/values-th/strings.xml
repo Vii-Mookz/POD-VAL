@@ -40,4 +40,8 @@
     <string name="notlogin">กรุณาติดต่อเจ้าหน้าที่ปฏิบัติการขนส่ง</string>
     <string name="duplicate">มีการลงชื่อเข้าใช้ซ้อน กรุณาเข้าสู่ระบบใหม่อีกครั้ง</string>
     <string name="percent_load">% การบรรทุกสินค้า</string>
+    <string name="Savepic">บันทึกรูป</string>
+    <string name="save_pic_success">บันทึกรูปเสร็จสิ้น</string>
+    <string name="save_pic_unsuccess">บันทึกรูปไม่สำเร็จลองใหม่อีกครั้ง</string>
+    <string name="loading">กำลังโหลด...</string>
 </resources>
