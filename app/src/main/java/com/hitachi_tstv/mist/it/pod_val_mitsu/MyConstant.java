@@ -23,3 +23,4 @@ public interface MyConstant {
     public static final String[] getColumnLogin = new String[]{"drv_id", "drv_name", "ven_id", "drv_pic", "checkGPSIn", "checkGPSOut", "gender", "drv_username"};
     public static final int getColumnLoginSize = getColumnLogin.length;
 }
+           
