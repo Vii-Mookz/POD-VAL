@@ -49,6 +49,8 @@
     <string name="save_pic_success">Save Picture Success</string>
     <string name="save_pic_unsuccess">Save Picture Unsuccess</string>
     <string name="loading">Loading...</string>
+    <string name="savePicDialog">Are you sure to save picture?</string>
+    <string name="gps_err">Please click when you arrived</string>
 
 
 </resources>

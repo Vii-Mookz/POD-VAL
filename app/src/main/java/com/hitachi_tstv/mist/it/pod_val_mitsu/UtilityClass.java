@@ -1,6 +1,9 @@
 package com.hitachi_tstv.mist.it.pod_val_mitsu;
 
+
+
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -45,6 +48,7 @@ public class UtilityClass {
         }
     };
 
+    @SuppressLint("MissingPermission")
     String getDeviceID() {
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         return telephonyManager.getDeviceId();

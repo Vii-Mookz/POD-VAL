@@ -5,10 +5,10 @@ package com.hitachi_tstv.mist.it.pod_val_mitsu;
  */
 
 public interface MyConstant {
-//    public static final String serverString = "http://203.154.103.43/";
-//    public static final String projectString = "mmth";
-    public static final String serverString = "http://service.eternity.co.th/";
-    public static final String projectString = "mmth-close";
+   // public static final String serverString = "http://203.154.103.43/";
+   // public static final String projectString = "mmth";
+   public static final String serverString = "http://service.eternity.co.th/";
+   public static final String projectString = "mmth-close";
     public static final String pathString = "/app/CenterService/";
     public static final String urlGetUserLogin = serverString + projectString + pathString + "getUserLogin.php";
     public static final String urlGetPlanDate = serverString + projectString + pathString + "getPlanDate.php";

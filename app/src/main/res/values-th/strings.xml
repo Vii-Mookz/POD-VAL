@@ -44,4 +44,6 @@
     <string name="save_pic_success">บันทึกรูปเสร็จสิ้น</string>
     <string name="save_pic_unsuccess">บันทึกรูปไม่สำเร็จลองใหม่อีกครั้ง</string>
     <string name="loading">กำลังโหลด...</string>
+    <string name="savePicDialog">คุณต้องการที่จะบันทึกรูปใช่หรือไม่?</string>
+    <string name="gps_err">กรุณากดเมื่อถึงจุดหมายปลายทางแล้ว</string>
 </resources>

@@ -35,6 +35,8 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapProgressBar;
 import com.beardedhen.androidbootstrap.api.attributes.BootstrapBrand;
 import com.beardedhen.androidbootstrap.api.defaults.DefaultBootstrapBrand;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,11 +89,13 @@ public class PlanDeliveryActivity extends AppCompatActivity {
     ImageView seventhImageView;
     @BindView(R.id.btn_savepic)
     Button savepicButton;
+    @BindView(R.id.et_comment)
+    TextView remarkTextView;
 
-    private String[] planDtl2IdStrings, amountStrings, loginStrings, datePlanStrings;
+    private String[] planDtl2IdStrings, amountStrings, loginStrings, datePlanStrings, fileNameStrings, filePathStrings, indexFileNameStrings;
     private String pathSeal1String, pathSeal2String, pathSeal3String, pathPack4String, pathPack5String, pathPack6String, pathPack7String;
-    private String planDtlIdString, planDtl2IdString, planNameString, positionString, planIdString,
-            timeArrivalString, transporttypeString, suppLatString, suppLonString, dateString, suppRadiusString, totalPercentageString, spinnerValueString, flagArrivalString;
+    private String planDtlIdString, planDtl2IdString, planNameString, positionString, planIdString, suppRadiusString, totalPercentageString, spinnerValueString, flagArrivalString;
+    String storeLatString, storeLongString, storeRadiusString, timeArrivalString, transporttypeString, suppLatString, suppLonString, dateString;
     Uri seal1Uri, seal2Uri, seal3Uri, pack4Uri, pack5Uri, pack6Uri, pack7Uri;
     Bitmap imgSeal1Bitmap, imgSeal2Bitmap, imgSeal3Bitmap, imgPack4Bitmap, imgPack5Bitmap, imgPack6Bitmap, imgPack7Bitmap;
     Boolean imgSeal1ABoolean, imgSeal2ABoolean, imgSeal3ABoolean, imgPack4ABoolean, imgPack5ABoolean, imgPack6ABoolean, imgPack7ABoolean;
@@ -180,6 +184,10 @@ public class PlanDeliveryActivity extends AppCompatActivity {
         positionString = getIntent().getStringExtra("position");
         timeArrivalString = getIntent().getStringExtra("timeArrival");
 
+        indexFileNameStrings = new String[]{"Seal1.png", "Seal2.png", "Seal3.png", "Package1.png", "Package2.png", "Package3.png", "Package4.png"};
+
+        fileNameStrings = new String[indexFileNameStrings.length];
+        filePathStrings = new String[indexFileNameStrings.length];
 
         pathSeal1String = "";
         pathSeal2String = "";
@@ -493,16 +501,8 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                     JSONArray jsonArray = new JSONArray(s);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        suppLatString = jsonObject.getString("supp_lat");
-                        suppLonString = jsonObject.getString("supp_lon");
-                        suppRadiusString = jsonObject.getString("supp_radius");
 
                         flagArrivalString = jsonObject.getString("flagArrivaled");
-
-                        Log.d("Tag", "suppLatString::::" + suppLatString);
-                        Log.d("Tag", "suppLonString::::" + suppLonString);
-                        Log.d("Tag", "suppRadiusString::::" + suppRadiusString);
-
 
                         Log.d("Tag", "A " + jsonObject.getString("total_percent_load").equals("null"));
                         Log.d("Tag", "B " + jsonObject.getString("total_percent_load"));
@@ -510,46 +510,131 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         if (!(jsonObject.getString("total_percent_load").equals("null"))) {
                             totalPercentageString = jsonObject.getString("total_percent_load");
                         } else {
-                            totalPercentageString = "100";
+                            totalPercentageString = "0";
                         }
-                        Float aFloat = Float.parseFloat(totalPercentageString);
-
-                        progessTruck.setProgress(Math.round(aFloat));
-
-                        final String[] size = getSizeSpinner(Math.round(aFloat));
-                        final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
-                        spinnerValueString = size[0];
-
-
-                        SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
-                        percentageSpinner.setAdapter(spinnerAdaptor);
-                        percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                spinnerValueString = size[i];
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> adapterView) {
-
-                            }
-                        });
-
-
-                        if (flagArrivalString.equals("Y")) {
-                            btnArrivalPD.setVisibility(View.GONE);
-                            savepicButton.setVisibility(View.VISIBLE);
-                            percentageSpinner.setEnabled(true);
-                            btnDeparturePD.setEnabled(true);
-
-
+                        if (jsonObject.getString("supp_radius").equals("null") || jsonObject.getString("supp_radius").equals("")) {
+                            storeRadiusString = "0";
                         } else {
-                            btnArrivalPD.setVisibility(View.VISIBLE);
-                            savepicButton.setVisibility(View.GONE);
-                            btnDeparturePD.setEnabled(false);
-                            percentageSpinner.setEnabled(false);
+                            storeRadiusString = jsonObject.getString("supp_radius");
+                        }
+                        if (jsonObject.getString("supp_lat").equals("null") || jsonObject.getString("supp_lat").equals("")) {
+                            storeLatString = "0";
+                        } else {
+                            storeLatString = jsonObject.getString("supp_lat");
+                        }
+                        if (jsonObject.getString("supp_lon").equals("null") || jsonObject.getString("supp_lon").equals("")) {
+                            storeLongString = "0";
+                        } else {
+                            storeLongString = jsonObject.getString("supp_lon");
+                        }
+
+
+                        Log.d("Tag", "Lat " + jsonObject.getString("supp_lat") + " Long " + jsonObject.getString("supp_lon"));
+
+                        JSONObject jsonObject1 = jsonObject.getJSONObject("pic");
+                        JSONObject jsonObject2 = jsonObject1.getJSONObject("seal1");
+                        fileNameStrings[0] = jsonObject2.getString("filename");
+                        filePathStrings[0] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("seal2");
+                        fileNameStrings[1] = jsonObject2.getString("filename");
+                        filePathStrings[1] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("seal3");
+                        fileNameStrings[2] = jsonObject2.getString("filename");
+                        filePathStrings[2] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("package1");
+                        fileNameStrings[3] = jsonObject2.getString("filename");
+                        filePathStrings[3] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("package2");
+                        fileNameStrings[4] = jsonObject2.getString("filename");
+                        filePathStrings[4] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("package3");
+                        fileNameStrings[5] = jsonObject2.getString("filename");
+                        filePathStrings[5] = jsonObject2.getString("filepath");
+                        jsonObject2 = jsonObject1.getJSONObject("package4");
+                        fileNameStrings[6] = jsonObject2.getString("filename");
+                        filePathStrings[6] = jsonObject2.getString("filepath");
+
+                    }
+
+                    Float aFloat = Float.parseFloat(totalPercentageString);
+
+                    progessTruck.setProgress(Math.round(aFloat));
+
+                    final String[] size = getSizeSpinner(Math.round(aFloat));
+                    final BootstrapBrand[] color = getColorSpinner(Math.round(aFloat));
+                    spinnerValueString = size[0];
+
+
+                    SpinnerAdaptor spinnerAdaptor = new SpinnerAdaptor(context, size, color);
+                    percentageSpinner.setAdapter(spinnerAdaptor);
+                    percentageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            spinnerValueString = size[i];
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
 
                         }
+                    });
+
+                    String path = MyConstant.serverString + MyConstant.projectString + MyConstant.pathString;
+                    for (int i = 0; i < filePathStrings.length; i++) {
+                        if (!filePathStrings[i].equals("null")) {
+                            switch (i) {
+                                case 0:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(leftImageView);
+                                    break;
+                                case 1:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(backImageView);
+                                    break;
+                                case 2:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(rightImageView);
+                                    break;
+                                case 3:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(fourthImageView);
+                                    break;
+                                case 4:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(fifthImageView);
+                                    break;
+                                case 5:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(sixthImageView);
+                                    break;
+                                case 6:
+                                    Glide.with(context).load(path + filePathStrings[i]).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).into(seventhImageView);
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (flagArrivalString.equals("Y")) {
+                        btnArrivalPD.setVisibility(View.GONE);
+                        savepicButton.setVisibility(View.VISIBLE);
+                        percentageSpinner.setEnabled(true);
+                        btnDeparturePD.setEnabled(true);
+                        leftImageView.setEnabled(true);
+                        backImageView.setEnabled(true);
+                        rightImageView.setEnabled(true);
+                        fourthImageView.setEnabled(true);
+                        fifthImageView.setEnabled(true);
+                        sixthImageView.setEnabled(true);
+                        seventhImageView.setEnabled(true);
+                        remarkTextView.setEnabled(true);
+
+                    } else {
+                        btnArrivalPD.setVisibility(View.VISIBLE);
+                        savepicButton.setVisibility(View.GONE);
+                        btnDeparturePD.setEnabled(false);
+                        percentageSpinner.setEnabled(false);
+                        leftImageView.setEnabled(false);
+                        backImageView.setEnabled(false);
+                        rightImageView.setEnabled(false);
+                        fourthImageView.setEnabled(false);
+                        fifthImageView.setEnabled(false);
+                        sixthImageView.setEnabled(false);
+                        seventhImageView.setEnabled(false);
+                        remarkTextView.setEnabled(false);
 
                     }
 
@@ -691,7 +776,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 2:
                 if (resultCode == RESULT_OK) {
                     pathSeal2String = seal2Uri.getPath();
-                    try{
+                    try {
                         imgSeal2Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(seal2Uri));
                         if (imgSeal2Bitmap.getHeight() < imgSeal2Bitmap.getWidth()) {
                             imgSeal2Bitmap = rotateBitmap(imgSeal2Bitmap);
@@ -706,7 +791,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 3:
                 if (resultCode == RESULT_OK) {
                     pathSeal3String = seal3Uri.getPath();
-                    try{
+                    try {
                         imgSeal3Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(seal3Uri));
                         if (imgSeal3Bitmap.getHeight() < imgSeal3Bitmap.getWidth()) {
                             imgSeal3Bitmap = rotateBitmap(imgSeal3Bitmap);
@@ -721,7 +806,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 4:
                 if (resultCode == RESULT_OK) {
                     pathPack4String = pack4Uri.getPath();
-                    try{
+                    try {
                         imgPack4Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack4Uri));
                         if (imgPack4Bitmap.getHeight() < imgPack4Bitmap.getWidth()) {
                             imgPack4Bitmap = rotateBitmap(imgPack4Bitmap);
@@ -736,7 +821,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 5:
                 if (resultCode == RESULT_OK) {
                     pathPack5String = pack5Uri.getPath();
-                    try{
+                    try {
                         imgPack5Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack5Uri));
                         if (imgPack5Bitmap.getHeight() < imgPack5Bitmap.getWidth()) {
                             imgPack5Bitmap = rotateBitmap(imgPack5Bitmap);
@@ -751,7 +836,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 6:
                 if (resultCode == RESULT_OK) {
                     pathPack6String = pack6Uri.getPath();
-                    try{
+                    try {
                         imgPack6Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack6Uri));
                         if (imgPack6Bitmap.getHeight() < imgPack6Bitmap.getWidth()) {
                             imgPack6Bitmap = rotateBitmap(imgPack6Bitmap);
@@ -766,7 +851,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
             case 7:
                 if (resultCode == RESULT_OK) {
                     pathPack7String = pack7Uri.getPath();
-                    try{
+                    try {
                         imgPack7Bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(pack7Uri));
                         if (imgPack7Bitmap.getHeight() < imgPack7Bitmap.getWidth()) {
                             imgPack7Bitmap = rotateBitmap(imgPack7Bitmap);
@@ -781,173 +866,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
         }
     }
 
-
-    @OnClick({R.id.btn_arrival, R.id.btn_confirm,R.id.btn_savepic,R.id.img_l,R.id.img_b,R.id.img_r,R.id.img_4,R.id.img_5,R.id.img_6,R.id.img_7})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.btn_savepic:
-                if (!Objects.equals(pathSeal1String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Seal1.png", planDtl2IdString, imgSeal1Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathSeal2String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Seal2.png", planDtl2IdString, imgSeal2Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathSeal3String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Seal3.png", planDtl2IdString, imgSeal3Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathPack4String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Package1.png", planDtl2IdString, imgPack4Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathPack5String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Package2.png", planDtl2IdString, imgPack5Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathPack6String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Package3.png", planDtl2IdString, imgPack6Bitmap);
-                    syncUploadPicture.execute();
-                }
-                if (!Objects.equals(pathPack7String, "")) {
-                    SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, "Package4.png", planDtl2IdString, imgPack7Bitmap);
-                    syncUploadPicture.execute();
-                }
-                break;
-            case R.id.img_l:
-                if (!imgSeal1ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal1.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    seal1Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal1Uri);
-                    startActivityForResult(cameraIntent1, 1);
-                }
-                break;
-            case R.id.img_b:
-                if (!imgSeal2ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal2.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    seal2Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal2Uri);
-                    startActivityForResult(cameraIntent1, 2);
-                }
-                break;
-            case R.id.img_r:
-                if (!imgSeal3ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Seal3.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    seal3Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal3Uri);
-                    startActivityForResult(cameraIntent1, 3);
-                }
-                break;
-            case R.id.img_4:
-                if (!imgPack4ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package1.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    pack4Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack4Uri);
-                    startActivityForResult(cameraIntent1, 4);
-                }
-                break;
-            case R.id.img_5:
-                if (!imgPack5ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package2.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    pack5Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack5Uri);
-                    startActivityForResult(cameraIntent1, 5);
-                }
-                break;
-            case R.id.img_6:
-                if (!imgPack6ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package3.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    pack6Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack6Uri);
-                    startActivityForResult(cameraIntent1, 6);
-                }
-                break;
-            case R.id.img_7:
-                if (!imgPack7ABoolean) {
-                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", "Package4.png");
-                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    pack7Uri = Uri.fromFile(originalFile1);
-                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack7Uri);
-                    startActivityForResult(cameraIntent1, 7);
-                }
-                break;
-            case R.id.btn_arrival:
-
-                final UtilityClass utilityClass = new UtilityClass(PlanDeliveryActivity.this);
-                if (loginStrings[4].equals("Y")) {
-                    if (utilityClass.setLatLong(0)) {
-
-                        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                        dialog.setTitle(R.string.alert);
-                        dialog.setIcon(R.drawable.warning);
-                        dialog.setCancelable(true);
-                        dialog.setMessage(R.string.arrivalDialog);
-
-                        AlertDialog.Builder builder = dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                SynUpdateArrival synUpdateArrival = new SynUpdateArrival(utilityClass.getLatString(), utilityClass.getLongString(), utilityClass.getTimeString(), PlanDeliveryActivity.this);
-                                synUpdateArrival.execute();
-                            }
-                        });
-
-                        dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        dialog.show();
-                    }
-                }
-
-                break;
-            case R.id.btn_confirm:
-
-                final UtilityClass utilityClass1 = new UtilityClass(PlanDeliveryActivity.this);
-                if (loginStrings[5].equals("Y")) {
-                    if (utilityClass1.setLatLong(0)) {
-                        AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
-                        dialog1.setTitle(R.string.alert);
-                        dialog1.setIcon(R.drawable.warning);
-                        dialog1.setCancelable(true);
-                        dialog1.setMessage(R.string.departDialog);
-
-                        dialog1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                if (utilityClass1.setLatLong(0)) {
-                                    SynUpdateDeparture synUpdateDeparture = new SynUpdateDeparture(utilityClass1.getLatString(), utilityClass1.getLongString(), utilityClass1.getTimeString(), spinnerValueString, PlanDeliveryActivity.this);
-                                    synUpdateDeparture.execute();
-                                } else {
-                                    Toast.makeText(getBaseContext(), getResources().getText(R.string.err_gps1), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-                        dialog1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-
-                        dialog1.show();
-
-                    }
-                }
-
-                break;
-        }
-
-
-    }
-
-    private class SynUpdateArrival extends AsyncTask<Void, Void, String> {
+    class SynUpdateArrival extends AsyncTask<Void, Void, String> {
         String latString, longString, timeString;
         Context context;
         UtilityClass utilityClass;
@@ -1008,6 +927,14 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         savepicButton.setVisibility(View.VISIBLE);
                         percentageSpinner.setEnabled(true);
                         btnDeparturePD.setEnabled(true);
+                        leftImageView.setEnabled(true);
+                        backImageView.setEnabled(true);
+                        rightImageView.setEnabled(true);
+                        fourthImageView.setEnabled(true);
+                        fifthImageView.setEnabled(true);
+                        sixthImageView.setEnabled(true);
+                        seventhImageView.setEnabled(true);
+                        remarkTextView.setEnabled(true);
                     }
                 });
             } else if (s.equals("notlogin")) {
@@ -1040,17 +967,18 @@ public class PlanDeliveryActivity extends AppCompatActivity {
         }
     }
 
-    private class SynUpdateDeparture extends AsyncTask<Void, Void, String> {
-        String latString, longString, timeString, percentString;
+    class SynUpdateDeparture extends AsyncTask<Void, Void, String> {
+        String latString, longString, timeString, percentString, remarkString;
         Context context;
         UtilityClass utilityClass;
 
 
-        public SynUpdateDeparture(String latString, String longString, String timeString, String percentString, Context context) {
+        public SynUpdateDeparture(String latString, String longString, String timeString, String percentString, String remarkString, Context context) {
             this.latString = latString;
             this.longString = longString;
             this.timeString = timeString;
             this.percentString = percentString;
+            this.remarkString = remarkString;
             this.context = context;
             utilityClass = new UtilityClass(context);
         }
@@ -1068,6 +996,7 @@ public class PlanDeliveryActivity extends AppCompatActivity {
                         .add("Driver_Name", loginStrings[7])
                         .add("PlanDtl2_ID", planDtl2IdString)
                         .add("percent_load", percentString)
+                        .add("remarkSupp", remarkString)
                         .add("Lat", latString)
                         .add("Lng", longString)
                         .add("device_id", deviceId)
@@ -1137,5 +1066,209 @@ public class PlanDeliveryActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick({R.id.btn_arrival, R.id.btn_confirm, R.id.btn_savepic, R.id.img_l, R.id.img_b, R.id.img_r, R.id.img_4, R.id.img_5, R.id.img_6, R.id.img_7})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_savepic:
+                AlertDialog.Builder dialog1 = new AlertDialog.Builder(this);
+                dialog1.setTitle(R.string.alert);
+                dialog1.setIcon(R.drawable.warning);
+                dialog1.setCancelable(true);
+                dialog1.setMessage(R.string.savePicDialog);
 
+                dialog1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if (!Objects.equals(pathSeal1String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[0], planDtl2IdString, imgSeal1Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathSeal2String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[1], planDtl2IdString, imgSeal2Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathSeal3String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[2], planDtl2IdString, imgSeal3Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathPack4String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[3], planDtl2IdString, imgPack4Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathPack5String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[4], planDtl2IdString, imgPack5Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathPack6String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[5], planDtl2IdString, imgPack6Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                        if (!Objects.equals(pathPack7String, "")) {
+                            SyncUploadPicture syncUploadPicture = new SyncUploadPicture(PlanDeliveryActivity.this, indexFileNameStrings[6], planDtl2IdString, imgPack7Bitmap);
+                            syncUploadPicture.execute();
+                        }
+                    }
+                });
+
+                dialog1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                dialog1.show();
+                break;
+            case R.id.img_l:
+                if (!imgSeal1ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[0]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal1Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal1Uri);
+                    startActivityForResult(cameraIntent1, 1);
+                }
+                break;
+            case R.id.img_b:
+                if (!imgSeal2ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[1]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal2Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal2Uri);
+                    startActivityForResult(cameraIntent1, 2);
+                }
+                break;
+            case R.id.img_r:
+                if (!imgSeal3ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[2]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    seal3Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, seal3Uri);
+                    startActivityForResult(cameraIntent1, 3);
+                }
+                break;
+            case R.id.img_4:
+                if (!imgPack4ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[3]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack4Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack4Uri);
+                    startActivityForResult(cameraIntent1, 4);
+                }
+                break;
+            case R.id.img_5:
+                if (!imgPack5ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[4]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack5Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack5Uri);
+                    startActivityForResult(cameraIntent1, 5);
+                }
+                break;
+            case R.id.img_6:
+                if (!imgPack6ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[5]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack6Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack6Uri);
+                    startActivityForResult(cameraIntent1, 6);
+                }
+                break;
+            case R.id.img_7:
+                if (!imgPack7ABoolean) {
+                    File originalFile1 = new File(Environment.getExternalStorageDirectory() + "/DCIM/", indexFileNameStrings[6]);
+                    Intent cameraIntent1 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    pack7Uri = Uri.fromFile(originalFile1);
+                    cameraIntent1.putExtra(MediaStore.EXTRA_OUTPUT, pack7Uri);
+                    startActivityForResult(cameraIntent1, 7);
+                }
+                break;
+            case R.id.btn_arrival:
+
+                final UtilityClass utilityClass = new UtilityClass(PlanDeliveryActivity.this);
+                if (utilityClass.setLatLong(0)) {
+                    final String latitude = utilityClass.getLatString();
+                    final String longitude = utilityClass.getLongString();
+
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                    dialog.setTitle(R.string.alert);
+                    dialog.setIcon(R.drawable.warning);
+                    dialog.setCancelable(true);
+                    dialog.setMessage(R.string.arrivalDialog);
+
+                    dialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!(latitude == null)) {
+                                if (loginStrings[4].equals("N")) {
+                                    SynUpdateArrival syncUpdateArrival = new SynUpdateArrival(latitude, longitude, utilityClass.getTimeString(), PlanDeliveryActivity.this);
+                                    syncUpdateArrival.execute();
+                                } else {
+                                    String distance = utilityClass.getDistanceMeter(storeLatString, storeLongString);
+                                    if (Double.parseDouble(distance) <= Double.parseDouble(storeRadiusString)) {
+                                        SynUpdateArrival syncUpdateArrival = new SynUpdateArrival(latitude, longitude, utilityClass.getTimeString(), PlanDeliveryActivity.this);
+                                        syncUpdateArrival.execute();
+                                    } else {
+                                        Toast.makeText(PlanDeliveryActivity.this, getResources().getString(R.string.gps_err), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    dialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    dialog.show();
+                }
+
+                break;
+            case R.id.btn_confirm:
+
+                final UtilityClass utilityClass1 = new UtilityClass(PlanDeliveryActivity.this);
+                if (utilityClass1.setLatLong(0)) {
+
+                    final String latitude = utilityClass1.getLatString();
+                    final String longitude = utilityClass1.getLongString();
+                    dialog1 = new AlertDialog.Builder(this);
+                    dialog1.setTitle(R.string.alert);
+                    dialog1.setIcon(R.drawable.warning);
+                    dialog1.setCancelable(true);
+                    dialog1.setMessage(R.string.departDialog);
+
+                    dialog1.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!(latitude == null)) {
+                                if (loginStrings[5].equals("N")) {
+
+                                    Log.d("Tag", "Lat " + storeLatString + " Long " + storeLongString);
+
+                                    SynUpdateDeparture synUpdateDeparture = new SynUpdateDeparture(utilityClass1.getLatString(), utilityClass1.getLongString(), utilityClass1.getTimeString(), spinnerValueString, remarkTextView.getText().toString(), PlanDeliveryActivity.this);
+                                    synUpdateDeparture.execute();
+                                } else {
+                                    Log.d("Tag", "Lat " + storeLatString + " Long " + storeLongString);
+                                    String distance = utilityClass1.getDistanceMeter(storeLatString, storeLongString);
+                                    if (Double.parseDouble(distance) <= Double.parseDouble(storeRadiusString)) {
+
+                                        SynUpdateDeparture synUpdateDeparture = new SynUpdateDeparture(utilityClass1.getLatString(), utilityClass1.getLongString(), utilityClass1.getTimeString(), spinnerValueString, remarkTextView.getText().toString(), PlanDeliveryActivity.this);
+                                        synUpdateDeparture.execute();
+                                    } else {
+                                        Toast.makeText(PlanDeliveryActivity.this, getResources().getString(R.string.gps_err), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    dialog1.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+                    dialog1.show();
+
+                }
+                break;
+        }
+    }
 }
+

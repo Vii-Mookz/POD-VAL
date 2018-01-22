@@ -111,7 +111,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/et_comment_p"
+                        android:id="@+id/et_comment"
                         android:layout_width="300dp"
                         android:layout_height="70dp"
                         android:layout_marginLeft="40dp"
@@ -123,7 +123,6 @@
                         android:padding="10dp"
                         android:textSize="@dimen/txt_h3" />
                 </LinearLayout>
-
             </LinearLayout>
 
             <LinearLayout
@@ -172,7 +171,7 @@
                     <ImageView
                         android:id="@+id/img_4"
                         android:layout_width="@dimen/picture_width_l"
-                        android:layout_height="@dimen/picture_height_l"
+                        android:layout_height="@dimen/picture_width_l"
                         android:layout_margin="@dimen/mini_margin"
                         android:layout_weight="0.5"
                         app:srcCompat="@drawable/warehouse2" />
@@ -180,7 +179,7 @@
                     <ImageView
                         android:id="@+id/img_5"
                         android:layout_width="@dimen/picture_width_l"
-                        android:layout_height="@dimen/picture_height_l"
+                        android:layout_height="@dimen/picture_width_l"
                         android:layout_margin="@dimen/mini_margin"
                         android:layout_weight="0.5"
                         app:srcCompat="@drawable/warehouse2" />
@@ -197,7 +196,7 @@
                     <ImageView
                         android:id="@+id/img_6"
                         android:layout_width="@dimen/picture_width_l"
-                        android:layout_height="@dimen/picture_height_l"
+                        android:layout_height="@dimen/picture_width_l"
                         android:layout_margin="@dimen/mini_margin"
                         android:layout_weight="0.5"
                         app:srcCompat="@drawable/warehouse2" />
@@ -205,7 +204,7 @@
                     <ImageView
                         android:id="@+id/img_7"
                         android:layout_width="@dimen/picture_width_l"
-                        android:layout_height="@dimen/picture_height_l"
+                        android:layout_height="@dimen/picture_width_l"
                         android:layout_margin="@dimen/mini_margin"
                         android:layout_weight="0.5"
                         app:srcCompat="@drawable/warehouse2" />
